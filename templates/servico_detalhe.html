@@ -1,0 +1,58 @@
+{% extends "menu.html" %}
+{% block content %}
+
+<section class="py-5 mt-4">
+    <div class="container">
+        <div class="glass-panel on-dark p-4 fade-in">
+            <div class="row align-items-center">
+
+                <div class="col-md-5 text-center mb-4 mb-md-0">
+                    <img src="{{ servico['imagem'] }}"
+                        class="img-fluid rounded-circle shadow-lg border border-warning border-4"
+                        style="width: 320px; height: 320px; object-fit: cover;">
+                </div>
+
+                <div class="col-md-7">
+                    <h2 class="fw-bold text-white">{{ servico['titulo'] }}</h2>
+                    <p class="text-muted mt-3" style="font-size: 1.1rem; line-height: 1.6;">
+                        {{ servico['descricao'] }}
+                    </p>
+
+                    <hr class="my-4 border-secondary opacity-25">
+
+                    <h5 class="fw-bold mb-3 text-warning"><i class="fas fa-file-invoice-dollar me-2"></i>Pedir Orçamento
+                    </h5>
+
+                    <form method="POST" action="{{ url_for('pedido_orcamento') }}">
+                        <input type="hidden" name="servico_id" value="{{ servico['id'] }}">
+
+                        <div class="mb-3">
+                            <label class="text-warning small fw-bold mb-1">O SEU NOME</label>
+                            <input type="text" name="nome" class="form-control input-glass" placeholder="Ex: João Silva"
+                                required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="text-warning small fw-bold mb-1">O SEU EMAIL</label>
+                            <input type="email" name="email" class="form-control input-glass"
+                                placeholder="exemplo@email.com" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="text-warning small fw-bold mb-1">MENSAGEM / NECESSIDADE</label>
+                            <textarea name="mensagem" class="form-control input-glass" rows="4"
+                                placeholder="Descreva brevemente o que procura para este serviço..."
+                                required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-visreci px-5 py-2 fw-bold shadow">
+                            Enviar Pedido de Orçamento
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base_login.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="login-title mb-3">
+        {% if servico %}Editar serviço{% else %}Novo serviço{% endif %}
+    </h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }} mb-3" role="alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <form method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="titulo" class="form-label">Título</label>
+            <input type="text" class="form-control" id="titulo" name="titulo"
+                value="{{ servico.titulo if servico else '' }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="descricao" class="form-label">Descrição</label>
+            <textarea class="form-control" id="descricao" name="descricao" rows="4"
+                required>{{ servico.descricao if servico else '' }}</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="imagem" class="form-label">URL da imagem</label>
+            <input class="form-control" type="file" name="imagem" accept=".jpg,.jpeg,.png,.webp">
+            <div class="form-text">
+                Usa caminhos como <code>/IMG/servico3.jpg</code> para aproveitar as imagens que já tens na pasta IMG.
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-success">
+            Guardar
+        </button>
+        <a href="{{ url_for('admin_servicos') }}" class="btn btn-outline-secondary ms-2">
+            Cancelar
+        </a>
+    </form>
+</div>
+{% endblock %}
+

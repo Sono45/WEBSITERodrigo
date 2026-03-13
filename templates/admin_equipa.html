@@ -1,0 +1,94 @@
+{% extends "menu.html" %}
+{% block title %}Gerir Equipa | Visreci{% endblock %}
+
+{% block content %}
+<section class="py-5 mt-5">
+    <div class="container">
+        <div class="row align-items-center mb-4 px-2">
+            <div class="col-sm-6 text-center text-sm-start">
+                <h2 class="text-white fw-bold mb-0">Gestão da Equipa</h2>
+            </div>
+            <div class="col-sm-6 text-center text-sm-end mt-3 mt-sm-0">
+                <a class="btn btn-outline-success border-2 fw-bold px-4" href="{{ url_for('admin_equipa_novo') }}">
+                    <i class="fas fa-user-plus me-2"></i>Novo membro
+                </a>
+            </div>
+        </div>
+
+        <div class="table-glass on-dark p-4 shadow-lg">
+            <div class="table-responsive">
+                <table class="table align-middle mb-0 text-white">
+                    <thead class="text-warning text-uppercase small" style="letter-spacing: 1px;">
+                        <tr>
+                            <th class="border-0 pb-3">ID</th>
+                            <th class="border-0 pb-3">Foto</th>
+                            <th class="border-0 pb-3">Nome</th>
+                            <th class="border-0 pb-3">Cargo</th>
+                            <th class="border-0 pb-3 text-center">Ativo</th>
+                            <th class="border-0 pb-3 text-end">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if membros and membros|length > 0 %}
+                        {% for m in membros %}
+                        <tr class="border-bottom border-secondary border-opacity-25">
+                            <td class="py-3 fw-bold">#{{ m["id"] }}</td>
+                            <td style="width:80px;">
+                                {% if m["foto"] %}
+                                <img src="{{ m['foto'] }}" class="rounded-circle shadow-sm border border-secondary"
+                                    style="width:48px; height:48px; object-fit:cover;">
+                                {% else %}
+                                <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center"
+                                    style="width:48px; height:48px; opacity:0.5;">
+                                    <i class="fas fa-user text-white"></i>
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td class="fw-semibold">{{ m["nome"] }}</td>
+                            <td class="text-muted small-text">{{ m["cargo"] or "----" }}</td>
+                            <td class="text-center">
+                                {% if m["ativo"] == 1 %}
+                                <span class="badge bg-success shadow-sm">Sim</span>
+                                {% else %}
+                                <span class="badge bg-secondary opacity-50">Não</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group">
+                                    <a class="btn btn-sm btn-outline-light rounded-pill px-3 me-2"
+                                        href="{{ url_for('admin_equipa_editar', membro_id=m['id']) }}">
+                                        <i class="fas fa-edit me-1"></i> Editar
+                                    </a>
+
+                                    <form method="POST" action="{{ url_for('admin_equipa_toggle', membro_id=m['id']) }}"
+                                        style="display:inline"
+                                        onsubmit="return confirm('Alterar estado deste membro?');">
+                                        {% if m["ativo"] == 1 %}
+                                        <button class="btn btn-sm btn-outline-warning rounded-pill px-3" type="submit">
+                                            <i class="fas fa-user-slash me-1"></i> Desativar
+                                        </button>
+                                        {% else %}
+                                        <button class="btn btn-sm btn-outline-success rounded-pill px-3" type="submit">
+                                            <i class="fas fa-user-check me-1"></i> Ativar
+                                        </button>
+                                        {% endif %}
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-5">
+                                <i class="fas fa-users-slash fa-3x mb-3 opacity-25"></i>
+                                <p>Ainda não existem membros na equipa.</p>
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

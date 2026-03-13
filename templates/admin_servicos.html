@@ -1,0 +1,67 @@
+{% extends "base_login.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="login-title mb-0">Gestão de Produtos/Serviços</h1>
+        <a href="{{ url_for('admin_servico_novo') }}" class="btn btn-success btn-sm">Novo serviço</a>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }} mb-3" role="alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Imagem</th>
+                    <th scope="col">Título</th>
+                    <th scope="col">Descrição</th>
+                    <th scope="col" class="text-end">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in servicos %}
+                <tr>
+                    <td>{{ s.id }}</td>
+                    <td>
+                        {% if s.imagem %}
+                        <img src="{{ s.imagem }}" alt="{{ s.titulo }}" style="width:60px; height:60px; object-fit:cover;"
+                            class="rounded-circle">
+                        {% endif %}
+                    </td>
+                    <td>{{ s.titulo }}</td>
+                    <td style="max-width: 320px;">
+                        <small class="text-muted d-block text-truncate" title="{{ s.descricao }}">{{ s.descricao }}</small>
+                    </td>
+                    <td class="text-end">
+                        <a href="{{ url_for('admin_servico_editar', servico_id=s.id) }}"
+                            class="btn btn-outline-primary btn-sm">Editar</a>
+                        <form method="post" action="{{ url_for('admin_servico_remover', servico_id=s.id) }}"
+                            style="display:inline-block;"
+                            onsubmit="return confirm('Tens a certeza que queres remover este serviço?');">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Remover</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted py-4">
+                        Ainda não existem serviços na base de dados.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+

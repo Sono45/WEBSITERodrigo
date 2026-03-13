@@ -1,0 +1,169 @@
+{% extends "menu.html" %}
+{% block content %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<section class="py-4 mt-4">
+    <div class="container mt-5">
+        <div class="row align-items-center mb-4">
+            <div class="col-sm-6">
+                <h2 class="text-white fw-bold m-0">Gestão de Pedidos</h2>
+            </div>
+            <div class="col-sm-6 text-sm-end mt-3 mt-sm-0">
+                <a href="{{ url_for('exportar_pedidos') }}" class="btn btn-outline-success border-2 fw-bold px-4">
+                    <i class="fas fa-file-excel me-2"></i>Exportar para Excel
+                </a>
+            </div>
+        </div>
+
+        <div class="table-glass on-dark p-4 shadow-lg">
+
+            <div class="row g-3 mb-4 align-items-end">
+                <div class="col-md-8">
+                    <label class="filter-label">PESQUISAR</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" id="pedidoSearch" class="form-control custom-input"
+                            placeholder="Nome, email ou serviço...">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label class="filter-label">FILTRAR POR ESTADO</label>
+                    <select class="form-select custom-input" id="filtroEstado" onchange="filtrar()">
+                        <option value="todos" {% if not filtro_atual %}selected{% endif %}>Exibir Todos</option>
+                        <option value="0" {% if filtro_atual=='0' %}selected{% endif %}>Pendentes</option>
+                        <option value="1" {% if filtro_atual=='1' %}selected{% endif %}>Tratados</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table align-middle mb-0 text-white" id="pedidosTable">
+                    <thead class="text-warning text-uppercase small" style="letter-spacing: 1px;">
+                        <tr>
+                            <th class="border-0 pb-3">Data / ID</th>
+                            <th class="border-0 pb-3">Serviço</th>
+                            <th class="border-0 pb-3">Cliente</th>
+                            <th class="border-0 pb-3 text-center">Estado</th>
+                            <th class="border-0 pb-3 text-end">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        {% for p in pedidos %}
+                        <tr class="border-bottom border-secondary border-opacity-25">
+                            <td class="py-3">
+                                <span class="d-block fw-bold text-white">#{{ p["id"] }}</span>
+                                <small class="text-muted small-text">{{ p["created_at"] }}</small>
+                            </td>
+                            <td>
+                                <span class="badge border border-warning text-warning px-2 py-1">
+                                    {{ p["servico_nome"] or "Geral" }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-bold">{{ p["nome"] }}</span>
+                                    <small class="text-muted small-text">{{ p["email"] }}</small>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                {% if p["tratado"] == 1 %}
+                                <span class="badge bg-success shadow-sm">
+                                    <i class="fas fa-check-circle me-1"></i> Tratado
+                                </span>
+                                {% else %}
+                                <span class="badge bg-warning text-dark shadow-sm">
+                                    <i class="fas fa-clock me-1"></i> Pendente
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-outline-light rounded-pill px-3 me-2"
+                                        data-bs-toggle="modal" data-bs-target="#modal{{ p['id'] }}">
+                                        <i class="fas fa-eye me-1"></i> Ver
+                                    </button>
+                                    {% if p["tratado"] == 0 %}
+                                    <a href="{{ url_for('admin_pedido_tratar', pedido_id=p['id']) }}"
+                                        class="btn btn-sm btn-success rounded-pill px-3">
+                                        <i class="fas fa-check"></i>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {% for p in pedidos %}
+    <div class="modal fade" id="modal{{ p['id'] }}" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-modal">
+                <div class="modal-header border-bottom border-secondary border-opacity-25">
+                    <div class="d-flex align-items-center justify-content-between w-100">
+                        <img src="/IMG/LogoLetra.png" alt="VISRECI" class="modal-logo">
+                        <h5 class="modal-title text-warning fw-bold ms-3">DETALHES DO PEDIDO</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                </div>
+                <div class="modal-body p-4 text-white">
+                    <div
+                        class="d-flex justify-content-between align-items-start mb-4 bg-dark bg-opacity-50 p-3 rounded border border-secondary">
+                        <div>
+                            <h6 class="text-warning mb-1 small uppercase fw-bold">Solicitante</h6>
+                            <p class="h5 mb-0">{{ p["nome"] }}</p>
+                            <span class="text-muted small">{{ p["email"] }}</span>
+                        </div>
+                        <div class="text-end">
+                            <h6 class="text-warning mb-1 small uppercase fw-bold">Data/Hora</h6>
+                            <span class="small">{{ p["created_at"] }}</span>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <h6 class="text-warning mb-2 small fw-bold text-uppercase">Serviço Pretendido</h6>
+                        <div class="py-2 px-3 border-start border-warning border-4 bg-secondary bg-opacity-10">
+                            <span class="fw-bold">{{ p["servico_nome"] or "Consulta Geral" }}</span>
+                        </div>
+                    </div>
+                    <div class="mb-2 text-start">
+                        <h6 class="text-warning mb-2 small fw-bold text-uppercase text-start">Mensagem do Cliente</h6>
+                        <div class="p-3 bg-dark rounded border border-secondary border-opacity-50 text-start">
+                            <p class="text-light mb-0" style="font-style: italic; line-height: 1.6;">
+                                "{{ p["mensagem"] }}"
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-outline-secondary btn-sm"
+                        data-bs-dismiss="modal">Fechar</button>
+                    {% if p["tratado"] == 0 %}
+                    <a href="{{ url_for('admin_pedido_tratar', pedido_id=p['id']) }}"
+                        class="btn btn-warning btn-sm px-4 fw-bold">CONCLUIR TRATAMENTO</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</section>
+
+<script>
+    document.getElementById('pedidoSearch').addEventListener('keyup', function () {
+        let val = this.value.toLowerCase();
+        let rows = document.querySelectorAll('#tableBody tr');
+        rows.forEach(row => {
+            row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none';
+        });
+    });
+
+    function filtrar() {
+        let val = document.getElementById('filtroEstado').value;
+        window.location.href = val === "todos" ? "{{ url_for('admin_pedidos') }}" : "{{ url_for('admin_pedidos') }}?estado=" + val;
+    }
+</script>
+{% endblock %}

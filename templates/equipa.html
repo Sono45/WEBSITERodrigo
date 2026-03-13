@@ -1,0 +1,31 @@
+<!-- Menu -->
+{% extends 'menu.html' %}
+{% block content %}
+<section class="py-5 mt-5">
+    <div class="container">
+        <h2 class="text-center fw-bold mb-5">A Nossa Equipa</h2>
+
+        <div class="row g-4 justify-content-center">
+            {% for m in equipa %}
+            <div class="col-md-4 col-sm-6">
+                <div class="card border-0 text-center h-100 shadow-sm rounded-4 p-4">
+                    <img src="{{ m['foto'] or '/IMG/avatar-placeholder.png' }}" class="rounded-circle mx-auto mb-3"
+                        style="width:160px;height:160px;object-fit:cover;">
+
+                    <h5 class="fw-bold">{{ m['nome'] }}</h5>
+                    <span class="text-muted">{{ m['cargo'] }}</span>
+
+                    {% if m['descricao'] %}
+                    <p class="mt-3 text-muted small">{{ m['descricao'] }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if not equipa %}
+        <p class="text-center text-muted">Equipa em atualização.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

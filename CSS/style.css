@@ -1,0 +1,769 @@
+/* =========================================================
+   VISRECI - style.css (organizado)
+   - Topbar + Navbar: como antes (Bootstrap normal)
+   - Fundo: com overlay escuro + blur leve (glass vibe)
+   - Secções: utilitários glass (glass-panel, glass-card, etc.)
+   - Contactos: layout e formulário
+   - Login: estilos scoped à página (page-login)
+   - Tabelas (logs/admin): glass table
+   ========================================================= */
+
+
+/* =========================
+   1) VARIÁVEIS (THEME)
+   ========================= */
+:root {
+    --vis-accent: #ffc107;
+    --vis-accent-hover: #e0a800;
+
+    --vis-text: #f9fafb;
+    --vis-muted: rgba(255, 255, 255, .72);
+
+    --vis-glass: rgba(255, 255, 255, .12);
+    --vis-glass-2: rgba(255, 255, 255, .08);
+    --vis-glass-border: rgba(255, 255, 255, .18);
+
+    --vis-shadow: 0 20px 60px rgba(0, 0, 0, .35);
+    --vis-shadow-soft: 0 10px 30px rgba(0, 0, 0, .20);
+}
+
+
+/* =========================
+   2) BASE / FUNDO
+   ========================= */
+body {
+    background-image: url('/IMG/Background 2.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+    font-family: 'Inter', sans-serif;
+    position: relative;
+    min-height: 100vh;
+}
+
+/* Overlay escuro + blur leve (para legibilidade) */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: rgba(0, 0, 0, .25);
+    backdrop-filter: blur(1.5px);
+    -webkit-backdrop-filter: blur(1.5px);
+}
+
+/* Evita navbar tapar âncoras */
+section {
+    scroll-margin-top: 100px;
+}
+
+
+/* =========================
+   3) TOPBAR / NAVBAR (COMO ANTES)
+   ========================= */
+
+/* Ícones da topbar */
+.topbar .bi {
+    font-size: 14px;
+    transition: color 0.2s ease-in-out;
+}
+
+.topbar a:hover .bi {
+    color: #0d6efd;
+}
+
+/* Aproximar aos cantos */
+.topbar .container-fluid {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+/* Navbar (mantém estilo do Bootstrap) */
+.navbar {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    z-index: 1030;
+    /* Bootstrap default */
+}
+
+/* Logo */
+.logo-navbar {
+    height: 70px;
+    width: auto;
+    margin-left: 40px;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+}
+
+/* No mobile, logótipo centralizado */
+@media (max-width: 991px) {
+    .navbar-brand {
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+}
+
+/* Dropdown de idiomas por cima */
+.dropdown-menu {
+    z-index: 2000 !important;
+}
+
+
+/* =========================
+   4) FOOTER
+   (mantive o teu estilo atual)
+   ========================= */
+footer {
+    background-color: rgba(248, 249, 250, 0.95);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+
+/* =========================
+   5) HERO / SETA
+   ========================= */
+.hero-highlight {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 16px;
+    background: rgba(0, 0, 0, 0.55);
+    color: #fff;
+    font-weight: 500;
+    margin-bottom: 30px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+.arrow-container {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.arrow-down {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+    font-size: 1.5rem;
+    animation: bounce 2s infinite;
+    transition: background 0.3s, transform 0.3s;
+    text-decoration: none;
+}
+
+.arrow-down:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+@keyframes bounce {
+
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+        transform: translateY(0);
+    }
+
+    40% {
+        transform: translateY(-10px);
+    }
+
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+
+/* =========================
+   6) SOBRE (texto branco)
+   ========================= */
+.sobre-section h2,
+.sobre-section p {
+    color: #fff !important;
+}
+
+.sobre-section p {
+    opacity: 0.9;
+}
+
+
+/* =========================
+   7) UTILITÁRIOS GLASS/DARK (para secções e cards)
+   ========================= */
+.glass-panel {
+    background: linear-gradient(180deg, var(--vis-glass), var(--vis-glass-2));
+    border: 1px solid var(--vis-glass-border);
+    border-radius: 20px;
+    box-shadow: var(--vis-shadow);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, .10);
+    border: 1px solid rgba(255, 255, 255, .16);
+    border-radius: 18px;
+    box-shadow: var(--vis-shadow-soft);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.glass-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255, 255, 255, .26);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, .30);
+}
+
+/* Texto em cima de fundo escuro */
+.on-dark,
+.on-dark * {
+    color: var(--vis-text);
+}
+
+.on-dark .text-muted {
+    color: var(--vis-muted) !important;
+}
+
+/* Botão Visreci */
+.btn-visreci {
+    background: var(--vis-accent);
+    border-color: var(--vis-accent);
+    color: #212529;
+    font-weight: 700;
+    border-radius: 999px;
+}
+
+.btn-visreci:hover {
+    background: var(--vis-accent-hover);
+    border-color: var(--vis-accent-hover);
+    color: #212529;
+}
+
+/* Inputs glass (opcional) */
+.input-glass {
+    background: rgba(255, 255, 255, .10) !important;
+    border: 1px solid rgba(255, 255, 255, .22) !important;
+    color: var(--vis-text) !important;
+}
+
+.input-glass::placeholder {
+    color: rgba(255, 255, 255, .60) !important;
+}
+
+
+/* =========================
+   8) CONTACTOS (limpo, sem duplicados)
+   ========================= */
+#contact {
+    padding: 80px 0;
+    background: transparent;
+    display: flex;
+    align-items: center;
+}
+
+.contact-wrapper {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    align-items: stretch;
+    /* mesma altura */
+}
+
+.contact-box {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+}
+
+/* Formulário */
+.contact-form-box {
+    background: rgba(0, 0, 0, 0.55);
+    border-radius: 0.75rem;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.contact-form .form-label {
+    color: #f1f1f1;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+}
+
+.contact-form .form-control {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 0.5rem;
+    color: #fff;
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.contact-form .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.contact-form .form-control:focus {
+    border-color: #ffc107;
+    box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.25);
+    background: rgba(255, 255, 255, 0.15);
+    outline: none;
+}
+
+.contact-form button[type="submit"] {
+    background: #ffc107;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.6rem 1.5rem;
+    font-weight: 600;
+    color: #222;
+    transition: background 0.3s ease, transform 0.2s ease;
+    width: 100%;
+}
+
+.contact-form button[type="submit"]:hover {
+    background: #ffce2e;
+    transform: translateY(-2px);
+}
+
+/* Mapa */
+.map-box {
+    border-radius: 0.75rem;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.55);
+    display: flex;
+}
+
+.map-box iframe {
+    border: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 0.75rem;
+    filter: brightness(0.9) saturate(0.85);
+}
+
+/* Alturas iguais em colunas Bootstrap */
+.row.align-items-stretch>[class*='col-'] {
+    display: flex;
+    align-items: stretch;
+}
+
+/* Responsivo */
+@media (max-width: 992px) {
+    .row.align-items-stretch {
+        flex-direction: column;
+    }
+
+    .map-box {
+        height: 350px;
+    }
+}
+
+/* Mensagem de sucesso */
+.success-message {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+}
+
+.success-content {
+    background: #fff;
+    padding: 2rem 3rem;
+    border-radius: 0.75rem;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.4s ease;
+}
+
+.success-content i {
+    font-size: 3rem;
+    color: #ffd000;
+    margin-bottom: 0.5rem;
+}
+
+.success-content p {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #222;
+    font-weight: 600;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+
+/* =========================
+   9) LOGIN (Área de Trabalhadores) - scoped
+   ========================= */
+.page-login .login-card {
+    max-width: 420px;
+    width: 100%;
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 32px 28px;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.page-login .login-badge {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.page-login .login-logo {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.page-login .login-title {
+    font-weight: 700;
+    font-size: 1.6rem;
+}
+
+.page-login .login-subtitle {
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+
+.page-login .btn-login {
+    border-radius: 999px;
+    padding: 10px 18px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: #ffffff;
+    width: 100%;
+}
+
+.page-login .small-note {
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+.page-login .btn-warning-visreci {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #212529;
+    font-weight: 600;
+}
+
+.page-login .btn-warning-visreci:hover {
+    background-color: #e0a800;
+    border-color: #e0a800;
+    color: #212529;
+}
+
+.page-login .btn-warning-visreci:focus,
+.page-login .btn-warning-visreci:active {
+    background-color: #d39e00;
+    border-color: #d39e00;
+    box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.4);
+}
+
+
+/* =========================
+   10) TABELAS GLASS (Admin/Logs)
+   ========================= */
+.table-glass {
+    background: rgba(0, 0, 0, .35);
+    border: 1px solid rgba(255, 255, 255, .16);
+    border-radius: 18px;
+    overflow: hidden;
+}
+
+.table-glass .table {
+    --bs-table-bg: transparent;
+    --bs-table-color: rgba(255, 255, 255, .86);
+    --bs-table-border-color: rgba(255, 255, 255, .10);
+    --bs-table-striped-bg: rgba(255, 255, 255, .06);
+    --bs-table-hover-bg: rgba(255, 255, 255, .08);
+}
+
+.table-glass thead {
+    background: rgba(255, 255, 255, .10);
+}
+
+.table-glass th {
+    color: rgba(255, 255, 255, .92) !important;
+    border-color: rgba(255, 255, 255, .14) !important;
+}
+
+.table-glass td {
+    color: rgba(255, 255, 255, .86) !important;
+    border-color: rgba(255, 255, 255, .10) !important;
+}
+
+.table-glass .text-muted,
+.table-glass .small,
+.table-glass small {
+    color: rgba(255, 255, 255, .72) !important;
+}
+
+/* --- ADMIN PEDIDOS CONSOLIDADO --- */
+
+/* 1. Contentor Principal (Caixa Glass) */
+.table-glass.on-dark {
+    background: rgba(15, 15, 15, 0.85) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 15px;
+    border: 1px solid rgba(197, 160, 33, 0.2);
+    padding: 25px !important;
+}
+
+/* 2. Labels dos Filtros */
+.filter-label {
+    color: #ffc107;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+    display: block;
+    text-align: left;
+}
+
+/* 3. Inputs e Selects */
+.custom-input, 
+#filtroEstado {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(197, 160, 33, 0.5) !important;
+    color: white !important;
+    height: 46px !important;
+    border-radius: 0 8px 8px 0 !important; /* Arredonda apenas direita quando tem ícone */
+}
+
+select#filtroEstado {
+    border-radius: 8px !important; /* Arredonda tudo no select */
+}
+
+.input-group-text {
+    background-color: rgba(0, 0, 0, 0.4) !important;
+    border: 1px solid rgba(197, 160, 33, 0.5) !important;
+    color: #c5a021 !important;
+    border-right: none !important;
+    border-radius: 8px 0 0 8px !important;
+}
+
+.custom-input::placeholder {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* 4. Estilo da Tabela */
+.table thead th {
+    color: #c5a021 !important;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    border-bottom: 2px solid rgba(197, 160, 33, 0.2) !important;
+}
+
+.small-text {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* 5. Botões */
+.btn-outline-success {
+    color: #2ecc71 !important;
+    border-color: #2ecc71 !important;
+    background: rgba(46, 204, 113, 0.05);
+    transition: 0.3s;
+}
+
+.btn-outline-success:hover {
+    background: #2ecc71 !important;
+    color: #000 !important;
+}
+
+/* 6. Modal */
+.glass-modal {
+    background: #121212 !important;
+    border: 1px solid #c5a021 !important;
+    border-radius: 15px;
+}
+
+.modal-logo {
+    max-height: 35px;
+    width: auto;
+}
+
+#filtroEstado option {
+    background-color: #1a1a1a !important;
+    color: white !important;
+}
+
+/* Dashboard Slim Cards */
+.dashboard-card {
+    background: rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 15px 20px;
+    transition: 0.3s;
+}
+
+.dashboard-card:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    transform: scale(1.02);
+}
+
+.dashboard-card i {
+    font-size: 1.8rem;
+}
+
+.dashboard-card h3 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin: 0;
+    color: #fff;
+}
+
+.dashboard-card small {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 1px;
+}
+
+/* Bordas coloridas discretas à esquerda */
+.card-servicos { border-left: 4px solid #ffc107; }
+.card-equipa { border-left: 4px solid #0dcaf0; }
+.card-pendentes { border-left: 4px solid #dc3545; }
+.card-admin { border-left: 4px solid #198754; }
+
+/* --- NOVO DESIGN DASHBOARD --- */
+
+.glass-container {
+    background: rgba(0, 0, 0, 0.45) !important;
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 18px;
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: 0.3s ease-in-out;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(197, 160, 33, 0.4);
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-right: 20px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.stat-content h3 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin: 0;
+    color: #fff;
+}
+
+.stat-content p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+/* Cores dos Ícones */
+.card-gold .stat-icon { color: #ffc107; box-shadow: 0 0 15px rgba(255, 193, 7, 0.2); }
+.card-blue .stat-icon { color: #0dcaf0; box-shadow: 0 0 15px rgba(13, 202, 240, 0.2); }
+.card-red .stat-icon { color: #ff4d4d; box-shadow: 0 0 15px rgba(255, 77, 77, 0.2); }
+.card-green .stat-icon { color: #2ecc71; box-shadow: 0 0 15px rgba(46, 204, 113, 0.2); }
+
+/* Botões de Ação */
+.quick-link-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    border-radius: 15px;
+    text-decoration: none;
+    transition: 0.3s;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.quick-link-btn i { font-size: 2rem; }
+.quick-link-btn span { font-weight: 700; margin-top: 10px; font-size: 0.9rem; }
+
+.btn-gold { color: #ffc107; }
+.btn-gold:hover { background: rgba(255, 193, 7, 0.1); border-color: #ffc107; }
+
+.btn-green { color: #2ecc71; }
+.btn-green:hover { background: rgba(46, 204, 113, 0.1); border-color: #2ecc71; }
+
+.uppercase-label {
+    letter-spacing: 2px;
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+.small-text {
+    color: rgba(255, 255, 255, 0.6) !important;
+    font-size: 0.85rem;
+}

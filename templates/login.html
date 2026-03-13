@@ -1,0 +1,49 @@
+{% extends "base_login.html" %}
+
+{% block content %}
+<div class="container d-flex justify-content-center py-5">
+    <div class="login-card">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} mb-3" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <div class="d-flex align-items-center mb-3">
+            <div class="login-badge me-3">
+                <img src="{{ url_for('static', filename='IMG/favicon.ico') }}" alt="Logo" class="login-logo">
+        </div>
+
+            <div>
+                <h1 class="login-title mb-0">Área de Trabalhadores</h1>
+                <p class="login-subtitle mb-0">Autenticação reservada a colaboradores Visreci.</p>
+            </div>
+        </div>
+
+        <form method="post" action="{{ url_for('login') }}">
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Palavra-passe</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit" class="btn btn-warning-visreci w-100">
+                Entrar
+            </button>
+        </form>
+
+        <p class="small-note text-center mt-3 mb-0">
+            Esta área é exclusiva para uso interno da empresa.
+        </p>
+    </div>
+</div>
+{% endblock %}
+

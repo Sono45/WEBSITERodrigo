@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="pt">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{% block title %}Visreci{% endblock %}</title>
+
+    <title>EcoFluids - Tratamento de Limalhas e Fluidos</title>
+    <link rel="icon" type="image/x-icon" href="/IMG/favicon.ico">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/CSS/style.css">
+</head>
+
+<body class="{% block body_class %}{% endblock %}">
+
+    <!-- Topbar -->
+    <div class="topbar bg-light text-secondary py-1">
+        <div class="container-fluid d-flex justify-content-between align-items-center small px-3">
+            <div class="d-flex gap-2">
+                <a href="#" class="text-secondary"><i class="bi bi-facebook"></i></a>
+                <a href="#" class="text-secondary"><i class="bi bi-twitter"></i></a>
+                <a href="#" class="text-secondary"><i class="bi bi-instagram"></i></a>
+                <a href="#" class="text-secondary"><i class="bi bi-linkedin"></i></a>
+            </div>
+
+            <div class="d-flex gap-3">
+                <div class="dropdown">
+                    <button id="langDropdownBtn" class="btn btn-sm btn-light dropdown-toggle d-flex align-items-center"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <img id="currentFlag" src="/flags/pt.png" width="20" class="me-1">
+                        <span id="currentLangLabel">PT</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item lang-option d-flex align-items-center" href="#" data-lang="pt"><img
+                                    src="/flags/pt.png" width="20" class="me-2"> Português (PT)</a></li>
+                        <li><a class="dropdown-item lang-option d-flex align-items-center" href="#" data-lang="en"><img
+                                    src="/flags/gb-eng.png" width="20" class="me-2"> English (EN)</a></li>
+                        <li><a class="dropdown-item lang-option d-flex align-items-center" href="#" data-lang="es"><img
+                                    src="/flags/es.png" width="20" class="me-2"> Español (ES)</a></li>
+                        <li><a class="dropdown-item lang-option d-flex align-items-center" href="#" data-lang="fr"><img
+                                    src="/flags/fr.png" width="20" class="me-2"> Français (FR)</a></li>
+                        <li><a class="dropdown-item lang-option d-flex align-items-center" href="#" data-lang="de"><img
+                                    src="/flags/de.png" width="20" class="me-2"> Deutsch (DE)</a></li>
+                        <li><a class="dropdown-item lang-option d-flex align-items-center" href="#" data-lang="it"><img
+                                    src="/flags/it.png" width="20" class="me-2"> Italiano (IT)</a></li>
+                    </ul>
+                </div>
+
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <a href="mailto:geral@visreci.pt" class="text-secondary text-decoration-none">
+                        <i class="bi bi-envelope me-1"></i> geral@visreci.pt
+                    </a>
+                    <span class="text-secondary">
+                        <i class="bi bi-telephone me-1"></i> +351928041065
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand mx-auto mx-lg-0 d-flex align-items-center" href="{{ url_for('index') }}">
+                <img src="/IMG/LogoLetra.png" alt="Visreci Logo" class="logo-navbar">
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="menuNav">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 fw-semibold">
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Início</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('sobre') }}">Sobre</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('servicos') }}">Serviços</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('contactos') }}">Contactos</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('equipa') }}">Equipa</a>
+                    </li>
+
+
+                    {% if session.get("user_id") %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            Olá, {{ session.get("user_name") }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{ url_for('dashboard') }}">Painel de Gestão</a></li>
+
+                            {% if session.get("user_role") == "admin" %}
+                            <li><a class="dropdown-item" href="{{ url_for('admin_servicos') }}">Gerir Serviços</a></li>
+                            {% endif %}
+
+                            {% if session.get("user_role") == "admin" %}
+                            <li><a class="dropdown-item" href="{{ url_for('admin_equipa') }}">Gerir Equipa</a></li>
+                            {% endif %}
+                            <li><a class="dropdown-item" href="{{ url_for('admin_logs') }}">Logs</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin_pedidos') }}">Pedidos</a></li>
+
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}">Terminar sessão</a>
+                            </li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('login') }}">Área de Trabalhadores</a>
+                    </li>
+                    {% endif %}
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Conteúdo de cada página -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/JS/jquery-3.7.1.min.js"></script>
+    <script src="/JS/script.js"></script>
+    <script src="/JS/lang.js"></script>
+</body>
+
+</html>
