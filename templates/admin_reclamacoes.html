@@ -1,0 +1,136 @@
+{% extends "menu.html" %}
+{% block content %}
+<section class="py-4 mt-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4" data-aos="fade-right">
+            <div>
+                <h3 class="text-white fw-bold m-0 text-uppercase" style="letter-spacing: 1px;">
+                    <i class="bi bi-chat-left-dots-fill text-warning me-2"></i>Gestão de Reclamações
+                </h3>
+                <p class="text-white-50 small mb-0">Administração de feedback e queixas de clientes</p>
+            </div>
+            <span class="badge bg-danger px-3 py-2 shadow-sm">ÁREA RESTRITA</span>
+        </div>
+
+        <div class="table-glass on-dark p-0 overflow-hidden shadow-lg" data-aos="fade-up">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 text-white">
+                    <thead class="bg-dark bg-opacity-50">
+                        <tr class="text-warning small text-uppercase" style="letter-spacing: 1px;">
+                            <th class="ps-4 py-3">Data</th>
+                            <th>Cliente</th>
+                            <th>Assunto / Mensagem</th>
+                            <th>Estado</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in reclamacoes %}
+                        <tr class="border-bottom border-secondary border-opacity-10">
+                            <td class="ps-4">
+                                <span class="small opacity-75 d-block">{{ r.created_at }}</span>
+                                <span class="badge bg-dark text-white-50" style="font-size: 0.65rem;">ID: #{{ r.id
+                                    }}</span>
+                            </td>
+
+                            <td>
+                                <div class="fw-bold text-white">{{ r.nome }}</div>
+                                <div class="small text-info"><i class="bi bi-envelope me-1"></i>{{ r.email }}</div>
+                            </td>
+
+                            <td>
+                                <div class="text-warning small fw-bold text-uppercase mb-1">{{ r.assunto }}</div>
+                                <div class="small text-white-50 text-truncate" style="max-width: 300px;"
+                                    title="{{ r.mensagem }}">
+                                    {{ r.mensagem }}
+                                </div>
+                            </td>
+
+                            <td>
+                                {% if r.estado == 'Pendente' %}
+                                <span class="badge rounded-pill bg-danger bg-opacity-75 px-3">PENDENTE</span>
+                                {% else %}
+                                <span class="badge rounded-pill bg-success bg-opacity-75 px-3">RESOLVIDA</span>
+                                {% endif %}
+                            </td>
+
+                            <td class="text-center">
+                                <div class="d-flex justify-content-center gap-2">
+
+                                    {% if r.estado == 'Pendente' %}
+                                    <a href="{{ url_for('responder_reclamacao', id=r.id) }}"
+                                        class="btn btn-sm btn-warning shadow-sm"
+                                        title="Escrever Resposta Personalizada">
+                                        <i class="bi bi-reply-fill"></i> Responder
+                                    </a>
+
+                                    <form action="{{ url_for('admin_reclamacao_responder', id=r.id) }}" method="POST"
+                                        style="display:inline;">
+                                        <input type="hidden" name="estado" value="Resolvida">
+                                        <button type="submit" class="btn btn-sm btn-outline-success border-2"
+                                            title="Marcar como Resolvida">
+                                            <i class="bi bi-check-lg"></i>
+                                        </button>
+                                    </form>
+                                    {% else %}
+                                    <span class="text-success small fw-bold"><i
+                                            class="bi bi-check-all me-1"></i>Concluído</span>
+                                    {% endif %}
+
+                                    <form action="{{ url_for('admin_reclamacao_remover', id=r.id) }}" method="POST"
+                                        onsubmit="return confirm('Tem a certeza que deseja apagar esta reclamação?');"
+                                        style="display:inline;">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger border-2">
+                                            <i class="bi bi-trash3-fill"></i>
+                                        </button>
+                                    </form>
+
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5">
+                                <div class="opacity-25">
+                                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                    <p class="italic">Não existem reclamações registadas no sistema.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    /* Efeito de Vidro para a Tabela */
+    .table-glass {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+    }
+
+    /* Hover nas linhas */
+    .table-hover tbody tr:hover {
+        background: rgba(255, 255, 255, 0.08) !important;
+        transition: 0.3s ease;
+    }
+
+    /* Ajuste para o texto truncado não quebrar o layout */
+    .text-truncate {
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    /* Estilo dos botões */
+    .btn-sm {
+        padding: 0.4rem 0.8rem;
+        font-weight: 600;
+        font-size: 0.75rem;
+    }
+</style>
+{% endblock %}

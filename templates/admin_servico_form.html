@@ -1,49 +1,100 @@
-{% extends "base_login.html" %}
-
+{% extends "menu.html" %}
 {% block content %}
-<div class="container py-5">
-    <h1 class="login-title mb-3">
-        {% if servico %}Editar serviço{% else %}Novo serviço{% endif %}
-    </h1>
+<section class="py-4 mt-5">
+    <div class="container" style="max-width: 800px;">
+        <div class="mb-4">
+            <h3 class="text-white fw-bold">
+                {% if servico %}Editar Serviço{% else %}Novo serviço{% endif %}
+            </h3>
+            <p class="text-white-50 small">Preenche os campos abaixo para gerir os serviços da Visreci.</p>
+        </div>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    {% for category, message in messages %}
-    <div class="alert alert-{{ category }} mb-3" role="alert">
-        {{ message }}
+        <div class="form-glass p-4 p-md-5">
+            <form method="POST" enctype="multipart/form-data">
+
+                <div class="mb-4">
+                    <label class="form-label text-warning small fw-bold text-uppercase">Título</label>
+                    <input type="text" name="titulo" class="form-control input-glass"
+                        value="{{ servico.titulo if servico else '' }}" required
+                        placeholder="Ex: Recuperação de Óleo Usado">
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-warning small fw-bold text-uppercase">Descrição</label>
+                    <textarea name="descricao" class="form-control input-glass" rows="5" required
+                        placeholder="Descreve detalhadamente o serviço...">{{ servico.descricao if servico else '' }}</textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-warning small fw-bold text-uppercase">Imagem do Serviço</label>
+                    <input type="file" name="imagem" class="form-control input-glass">
+                    {% if servico and servico.imagem %}
+                    <div class="mt-2">
+                        <span class="text-white-50 small d-block mb-1">Imagem atual:</span>
+                        <img src="{{ servico.imagem }}" class="rounded border border-secondary" style="width: 100px;">
+                    </div>
+                    {% endif %}
+                    <div class="form-text text-white-50 mt-2">
+                        Tipos permitidos: PNG, JPG, JPEG, WEBP.
+                    </div>
+                </div>
+
+                <hr class="border-secondary opacity-25 my-4">
+
+                <div class="d-flex gap-3">
+                    <button type="submit" class="btn btn-warning fw-bold px-4">
+                        <i class="bi bi-check-circle-fill me-2"></i>GUARDAR
+                    </button>
+                    <a href="{{ url_for('admin_servicos') }}" class="btn btn-outline-light px-4">
+                        CANCELAR
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
+</section>
 
-    <form method="POST" enctype="multipart/form-data">
-        <div class="mb-3">
-            <label for="titulo" class="form-label">Título</label>
-            <input type="text" class="form-control" id="titulo" name="titulo"
-                value="{{ servico.titulo if servico else '' }}" required>
-        </div>
+<style>
+    /* Contentor principal do formulário */
+    .form-glass {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
 
-        <div class="mb-3">
-            <label for="descricao" class="form-label">Descrição</label>
-            <textarea class="form-control" id="descricao" name="descricao" rows="4"
-                required>{{ servico.descricao if servico else '' }}</textarea>
-        </div>
+    /* Estilo para as caixas de texto e inputs */
+    .input-glass {
+        background: rgba(255, 255, 255, 0.07) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        color: white !important;
+        border-radius: 10px;
+        padding: 12px;
+        transition: 0.3s;
+    }
 
-        <div class="mb-3">
-            <label for="imagem" class="form-label">URL da imagem</label>
-            <input class="form-control" type="file" name="imagem" accept=".jpg,.jpeg,.png,.webp">
-            <div class="form-text">
-                Usa caminhos como <code>/IMG/servico3.jpg</code> para aproveitar as imagens que já tens na pasta IMG.
-            </div>
-        </div>
+    .input-glass:focus {
+        background: rgba(255, 255, 255, 0.12) !important;
+        border-color: #ffc107 !important;
+        box-shadow: 0 0 10px rgba(255, 193, 7, 0.2) !important;
+        outline: none;
+    }
 
-        <button type="submit" class="btn btn-success">
-            Guardar
-        </button>
-        <a href="{{ url_for('admin_servicos') }}" class="btn btn-outline-secondary ms-2">
-            Cancelar
-        </a>
-    </form>
-</div>
+    /* Placeholder (texto de fundo) mais visível */
+    .input-glass::placeholder {
+        color: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Estilo especial para o input de ficheiro */
+    .input-glass[type="file"]::file-selector-button {
+        background: #444;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 5px 15px;
+        margin-right: 15px;
+        cursor: pointer;
+    }
+</style>
 {% endblock %}
-

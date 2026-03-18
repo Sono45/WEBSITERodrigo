@@ -1,67 +1,90 @@
-{% extends "base_login.html" %}
-
+{% extends "menu.html" %}
 {% block content %}
-<div class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1 class="login-title mb-0">Gestão de Produtos/Serviços</h1>
-        <a href="{{ url_for('admin_servico_novo') }}" class="btn btn-success btn-sm">Novo serviço</a>
-    </div>
+<section class="py-4 mt-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="text-white fw-bold m-0">Gestão de Produtos/Serviços</h3>
+            <a href="{{ url_for('admin_servico_novo') }}" class="btn btn-success fw-bold shadow-sm">
+                <i class="bi bi-plus-lg"></i> Novo Serviço
+            </a>
+        </div>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    {% for category, message in messages %}
-    <div class="alert alert-{{ category }} mb-3" role="alert">
-        {{ message }}
+        <div class="table-glass on-dark p-0 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 text-white">
+                    <thead class="bg-dark">
+                        <tr class="text-warning">
+                            <th class="ps-4" style="width: 80px;">ID</th>
+                            <th style="width: 120px;">IMAGEM</th>
+                            <th>TÍTULO</th>
+                            <th>DESCRIÇÃO</th>
+                            <th class="text-center" style="width: 200px;">AÇÕES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in servicos %}
+                        <tr class="border-bottom border-secondary border-opacity-25">
+                            <td class="ps-4 fw-bold text-muted">#{{ s.id }}</td>
+                            <td>
+                                {% if s.imagem %}
+                                <img src="{{ s.imagem }}" alt="Serviço" class="rounded shadow-sm"
+                                    style="width: 80px; height: 50px; object-fit: cover;">
+                                {% else %}
+                                <div class="bg-secondary rounded d-flex align-items-center justify-content-center"
+                                    style="width: 80px; height: 50px;">
+                                    <i class="bi bi-image text-white-50"></i>
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td class="fw-bold">{{ s.titulo }}</td>
+                            <td class="small opacity-75">{{ s.descricao[:100] }}{% if s.descricao|length > 100 %}...{%
+                                endif %}</td>
+                            <td class="text-center">
+                                <div class="btn-group gap-2">
+                                    <a href="{{ url_for('admin_servico_editar', servico_id=s.id) }}"
+                                        class="btn btn-warning btn-sm fw-bold">
+                                        <i class="bi bi-pencil-square"></i> Editar
+                                    </a>
+                                    <form action="{{ url_for('admin_servico_remover', servico_id=s.id) }}" method="POST"
+                                        onsubmit="return confirm('Apagar este serviço permanentemente?');">
+                                        <button type="submit" class="btn btn-danger btn-sm fw-bold">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted italic">
+                                <i class="bi bi-box-seam d-block mb-2 fs-2"></i>
+                                Ainda não existem serviços na base de dados.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
+</section>
 
-    <div class="table-responsive">
-        <table class="table table-hover align-middle">
-            <thead>
-                <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">Imagem</th>
-                    <th scope="col">Título</th>
-                    <th scope="col">Descrição</th>
-                    <th scope="col" class="text-end">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for s in servicos %}
-                <tr>
-                    <td>{{ s.id }}</td>
-                    <td>
-                        {% if s.imagem %}
-                        <img src="{{ s.imagem }}" alt="{{ s.titulo }}" style="width:60px; height:60px; object-fit:cover;"
-                            class="rounded-circle">
-                        {% endif %}
-                    </td>
-                    <td>{{ s.titulo }}</td>
-                    <td style="max-width: 320px;">
-                        <small class="text-muted d-block text-truncate" title="{{ s.descricao }}">{{ s.descricao }}</small>
-                    </td>
-                    <td class="text-end">
-                        <a href="{{ url_for('admin_servico_editar', servico_id=s.id) }}"
-                            class="btn btn-outline-primary btn-sm">Editar</a>
-                        <form method="post" action="{{ url_for('admin_servico_remover', servico_id=s.id) }}"
-                            style="display:inline-block;"
-                            onsubmit="return confirm('Tens a certeza que queres remover este serviço?');">
-                            <button type="submit" class="btn btn-outline-danger btn-sm">Remover</button>
-                        </form>
-                    </td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="5" class="text-center text-muted py-4">
-                        Ainda não existem serviços na base de dados.
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
+<style>
+    /* Estilos para manter o padrão Glassmorphism */
+    .table-glass {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+    }
+
+    .table-hover tbody tr:hover {
+        background: rgba(255, 255, 255, 0.08) !important;
+        transition: 0.3s;
+    }
+
+    .text-warning {
+        color: #ffc107 !important;
+    }
+</style>
 {% endblock %}
-

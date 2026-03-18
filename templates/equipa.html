@@ -1,31 +1,32 @@
-<!-- Menu -->
-{% extends 'menu.html' %}
+{% extends "menu.html" %}
 {% block content %}
 <section class="py-5 mt-5">
     <div class="container">
-        <h2 class="text-center fw-bold mb-5">A Nossa Equipa</h2>
+        <div class="text-center mb-5">
+            <h2 class="fw-bold text-white">A Nossa Equipa</h2>
+            <p class="text-warning">Especialistas prontos para ajudar a sua empresa</p>
+        </div>
 
         <div class="row g-4 justify-content-center">
             {% for m in equipa %}
-            <div class="col-md-4 col-sm-6">
-                <div class="card border-0 text-center h-100 shadow-sm rounded-4 p-4">
-                    <img src="{{ m['foto'] or '/IMG/avatar-placeholder.png' }}" class="rounded-circle mx-auto mb-3"
-                        style="width:160px;height:160px;object-fit:cover;">
-
-                    <h5 class="fw-bold">{{ m['nome'] }}</h5>
-                    <span class="text-muted">{{ m['cargo'] }}</span>
-
-                    {% if m['descricao'] %}
-                    <p class="mt-3 text-muted small">{{ m['descricao'] }}</p>
-                    {% endif %}
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="team-card">
+                    <div class="team-img-container">
+                        {% if m['foto'] %}
+                        <img src="{{ m['foto'] }}" alt="{{ m['nome'] }}">
+                        {% else %}
+                        <img src="/static/IMG/default-user.png" alt="Membro">
+                        {% endif %}
+                    </div>
+                    <div class="team-info">
+                        <h5 class="fw-bold m-0">{{ m['nome'] }}</h5>
+                        <small class="text-warning text-uppercase">{{ m['cargo'] }}</small>
+                        <p class="mt-2 text-muted small">{{ m['descricao'][:80] }}...</p>
+                    </div>
                 </div>
             </div>
             {% endfor %}
         </div>
-
-        {% if not equipa %}
-        <p class="text-center text-muted">Equipa em atualização.</p>
-        {% endif %}
     </div>
 </section>
 {% endblock %}

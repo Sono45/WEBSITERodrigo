@@ -1,20 +1,27 @@
 {% extends "menu.html" %}
 {% block content %}
-<section class="py-4 mt-4">
+<section class="py-4 mt-5">
     <div class="container">
-        <h3 class="fw-bold mb-3">Logs de ações</h3>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="text-white fw-bold m-0">Painel de Auditoria (Logs)</h3>
 
-        <!-- FILTROS (fora da tabela) -->
-        <form method="GET" class="glass-panel on-dark p-3 mb-3">
+            <form action="{{ url_for('admin_logs_limpar') }}" method="POST"
+                onsubmit="return confirm('Tens a certeza que queres apagar todos os logs permanentemente?');">
+                <button type="submit" class="btn btn-outline-danger btn-sm fw-bold">
+                    <i class="bi bi-trash3-fill me-2"></i>LIMPAR HISTÓRICO
+                </button>
+            </form>
+        </div>
+
+        <form method="GET" action="{{ url_for('admin_logs') }}" class="table-glass on-dark p-3 mb-4">
             <div class="row g-2 align-items-end">
-                <div class="col-md-5">
-                    <label class="form-label small mb-1">Pesquisar</label>
+                <div class="col-md-4">
+                    <label class="text-warning small fw-bold">PESQUISAR</label>
                     <input type="text" name="q" value="{{ q }}" class="form-control input-glass"
-                        placeholder="email ou detalhes...">
+                        placeholder="Email ou detalhes...">
                 </div>
-
                 <div class="col-md-3">
-                    <label class="form-label small mb-1">Ação</label>
+                    <label class="text-warning small fw-bold">AÇÃO</label>
                     <select name="action" class="form-select input-glass">
                         <option value="">Todas</option>
                         {% for a in actions %}
@@ -22,52 +29,45 @@
                         {% endfor %}
                     </select>
                 </div>
-
                 <div class="col-md-3">
-                    <label class="form-label small mb-1">Entidade</label>
+                    <label class="text-warning small fw-bold">ENTIDADE</label>
                     <select name="entity" class="form-select input-glass">
                         <option value="">Todas</option>
                         {% for e in entities %}
-                        <option value="{{ e }}" {% if e==entity %}selected{% endif %}>{{ e }}</option>
+                        <option value="{{ e }}" {% if e==entity %}selected{% endif %}>{{ e|upper }}</option>
                         {% endfor %}
                     </select>
                 </div>
-
-                <div class="col-md-1 d-grid">
-                    <button class="btn btn-visreci">OK</button>
+                <div class="col-md-2 d-grid">
+                    <button type="submit" class="btn btn-warning fw-bold">FILTRAR</button>
                 </div>
             </div>
-
-            {% if q or action or entity %}
-            <div class="mt-2">
-                <a class="btn btn-sm btn-outline-light" href="{{ url_for('admin_logs') }}">Limpar filtros</a>
-            </div>
-            {% endif %}
         </form>
 
-        <!-- TABELA -->
-        <div class="table-glass on-dark p-3">
+        <div class="table-glass on-dark p-0 overflow-hidden">
             <div class="table-responsive">
-                <table class="table align-middle mb-0">
-                    <thead>
-                        <tr>
-                            <th>Data</th>
+                <table class="table table-hover align-middle mb-0 text-white">
+                    <thead class="bg-dark">
+                        <tr class="text-warning">
+                            <th class="ps-4">Data</th>
                             <th>Utilizador</th>
                             <th>Ação</th>
                             <th>Entidade</th>
-                            <th>ID</th>
                             <th>Detalhes</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for l in logs %}
+                        <tr class="border-bottom border-secondary border-opacity-25">
+                            <td class="ps-4 small opacity-75">{{ l.created_at }}</td>
+                            <td class="fw-bold">{{ l.user_email or 'Sistema' }}</td>
+                            <td><span class="badge bg-primary">{{ l.action }}</span></td>
+                            <td class="text-warning small">{{ l.entity|upper }}</td>
+                            <td class="small opacity-75">{{ l.details }}</td>
+                        </tr>
+                        {% else %}
                         <tr>
-                            <td class="text-muted small">{{ l["created_at"] }}</td>
-                            <td>{{ l["user_email"] or "-" }}</td>
-                            <td><span class="badge bg-dark">{{ l["action"] }}</span></td>
-                            <td>{{ l["entity"] }}</td>
-                            <td>{{ l["entity_id"] or "-" }}</td>
-                            <td class="text-muted small">{{ l["details"] or "" }}</td>
+                            <td colspan="5" class="text-center py-5 text-muted italic">Nenhum log encontrado.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -75,55 +75,46 @@
             </div>
         </div>
 
-        <!-- PAGINAÇÃO (fora da tabela) -->
-        {% if total_pages >= 1 %}
-        <nav class="mt-3">
-            <ul class="pagination justify-content-center mb-0">
-                <li class="page-item {% if page <= 1 %}disabled{% endif %}">
+        {% if total_pages > 1 %}
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center custom-pagination">
+                <li class="page-item {{ 'disabled' if page == 1 }}">
                     <a class="page-link"
                         href="{{ url_for('admin_logs', page=page-1, q=q, action=action, entity=entity) }}">Anterior</a>
                 </li>
-
-                {% set start = page-2 if page-2 > 1 else 1 %}
-                {% set end = page+2 if page+2 < total_pages else total_pages %} {% if start> 1 %}
-                    <li class="page-item">
-                        <a class="page-link"
-                            href="{{ url_for('admin_logs', page=1, q=q, action=action, entity=entity) }}">1</a>
-                    </li>
-                    {% if start > 2 %}
-                    <li class="page-item disabled"><span class="page-link">…</span></li>
-                    {% endif %}
-                    {% endif %}
-
-                    {% for p in range(start, end+1) %}
-                    <li class="page-item {% if p == page %}active{% endif %}">
-                        <a class="page-link"
-                            href="{{ url_for('admin_logs', page=p, q=q, action=action, entity=entity) }}">{{ p }}</a>
-                    </li>
-                    {% endfor %}
-
-                    {% if end < total_pages %} {% if end < total_pages-1 %} <li class="page-item disabled"><span
-                            class="page-link">…</span></li>
-                        {% endif %}
-                        <li class="page-item">
-                            <a class="page-link"
-                                href="{{ url_for('admin_logs', page=total_pages, q=q, action=action, entity=entity) }}">{{
-                                total_pages }}</a>
-                        </li>
-                        {% endif %}
-
-                        <li class="page-item {% if page >= total_pages %}disabled{% endif %}">
-                            <a class="page-link"
-                                href="{{ url_for('admin_logs', page=page+1, q=q, action=action, entity=entity) }}">Seguinte</a>
-                        </li>
+                {% for p in range(1, total_pages + 1) %}
+                <li class="page-item {{ 'active' if p == page }}">
+                    <a class="page-link"
+                        href="{{ url_for('admin_logs', page=p, q=q, action=action, entity=entity) }}">{{ p }}</a>
+                </li>
+                {% endfor %}
+                <li class="page-item {{ 'disabled' if page == total_pages }}">
+                    <a class="page-link"
+                        href="{{ url_for('admin_logs', page=page+1, q=q, action=action, entity=entity) }}">Próximo</a>
+                </li>
             </ul>
         </nav>
-
-        <div class="text-center small text-muted mt-2">
-            Página {{ page }} de {{ total_pages }} · Total: {{ total }} logs
-        </div>
         {% endif %}
-
     </div>
 </section>
+
+<style>
+    .input-glass option {
+        background: #222;
+        color: #fff;
+    }
+
+    .custom-pagination .page-link {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #fff;
+        transition: 0.3s;
+    }
+
+    .custom-pagination .page-item.active .page-link {
+        background: #ffc107 !important;
+        color: #000;
+        border-color: #ffc107;
+    }
+</style>
 {% endblock %}

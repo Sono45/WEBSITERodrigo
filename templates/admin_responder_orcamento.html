@@ -1,0 +1,45 @@
+{% extends "menu.html" %}
+{% block content %}
+<section class="py-5 mt-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="table-glass on-dark p-4 shadow-lg border-warning border-opacity-25"
+                    style="border: 1px solid rgba(255, 193, 7, 0.2);">
+                    <h3 class="text-white mb-4"><i class="bi bi-chat-left-dots-fill text-warning me-2"></i>Responder a:
+                        {{ p.nome }}</h3>
+
+                    <div class="alert bg-dark border-warning border-opacity-50 text-white-50 mb-4">
+                        <small class="text-warning fw-bold text-uppercase">Pedido de Orçamento para:</small><br>
+                        <span class="text-white fw-bold">{{ p.servico_nome or "Serviço Geral" }}</span>
+                        <hr class="my-2 opacity-25">
+                        <p class="mb-0 italic small text-white">"{{ p.mensagem }}"</p>
+                    </div>
+
+                    <form action="{{ url_for('responder_orcamento', id=p.id) }}" method="POST">
+                        <div class="mb-3">
+                            <label class="form-label text-warning small fw-bold text-uppercase">Valor Estimado
+                                (€):</label>
+                            <input type="number" name="valor" class="form-control bg-dark text-white border-secondary"
+                                style="max-width: 200px;" placeholder="Ex: 150">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-warning small fw-bold text-uppercase">A tua Proposta:</label>
+                            <textarea name="proposta" class="form-control bg-dark text-white border-secondary" rows="8"
+                                placeholder="Escreve aqui a resposta formal ao cliente..." required></textarea>
+                        </div>
+
+                        <div class="d-flex gap-2 pt-3">
+                            <button type="submit" class="btn btn-warning fw-bold px-4 text-dark shadow">
+                                <i class="bi bi-send-fill me-2"></i>ENVIAR PROPOSTA
+                            </button>
+                            <a href="{{ url_for('admin_pedidos') }}" class="btn btn-outline-light">CANCELAR</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

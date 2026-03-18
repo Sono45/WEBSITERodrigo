@@ -5,7 +5,7 @@
 
 <div class="container-fluid px-5 mt-5">
     <div class="row mb-5">
-        <div class="col-12">
+        <div class="col-12" data-aos="fade-down">
             <h2 class="text-white fw-bold mb-1">Olá, {{ user_name }}!</h2>
             <div class="badge bg-warning text-dark fw-bold px-3 py-2" style="letter-spacing: 1px;">
                 PAINEL DE CONTROLO VISRECI
@@ -14,78 +14,115 @@
     </div>
 
     <div class="row g-4 mb-5">
-        <div class="col-xl-3 col-md-6">
+        <div class="col-xl col-md-4" data-aos="zoom-in" data-aos-delay="100">
             <div class="stat-card card-gold">
-                <div class="stat-icon"><i class="fas fa-tools"></i></div>
+                <div class="stat-icon"><i class="bi bi-gear-fill"></i></div>
                 <div class="stat-content">
                     <h3>{{ total_servicos }}</h3>
                     <p>Serviços Ativos</p>
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6">
+        <div class="col-xl col-md-4" data-aos="zoom-in" data-aos-delay="200">
             <div class="stat-card card-blue">
-                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
                 <div class="stat-content">
                     <h3>{{ total_equipa }}</h3>
                     <p>Membros Equipa</p>
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6">
+        <div class="col-xl col-md-4" data-aos="zoom-in" data-aos-delay="300">
             <div class="stat-card card-red">
-                <div class="stat-icon"><i class="fas fa-exclamation-circle"></i></div>
+                <div class="stat-icon"><i class="bi bi-exclamation-octagon-fill"></i></div>
                 <div class="stat-content">
                     <h3>{{ pendentes }}</h3>
                     <p>Pedidos Pendentes</p>
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6">
+        <div class="col-xl col-md-6" data-aos="zoom-in" data-aos-delay="400">
             <div class="stat-card card-green">
-                <div class="stat-icon"><i class="fas fa-user-shield"></i></div>
+                <div class="stat-icon"><i class="bi bi-shield-lock-fill"></i></div>
                 <div class="stat-content">
                     <h3>{{ total_trabalhadores }}</h3>
                     <p>Administradores</p>
                 </div>
             </div>
         </div>
+        <div class="col-xl col-md-6" data-aos="zoom-in" data-aos-delay="500">
+            <div class="stat-card card-red">
+                <div class="stat-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
+                <div class="stat-content">
+                    <h3>{{ total_reclamacoes }}</h3>
+                    <p>Queixas Pendentes</p>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="row g-4">
-        <div class="col-lg-5">
+    <div class="row g-4 mb-5">
+        <div class="col-lg-8" data-aos="fade-up">
             <div class="glass-container p-4 h-100">
-                <h5 class="text-warning fw-bold mb-4 uppercase-label">Estatísticas de Pedidos</h5>
-                <div style="height: 250px; position: relative;">
-                    <canvas id="graficoVisreci"></canvas>
-                </div>
-                <div class="d-flex justify-content-center gap-5 mt-4">
-                    <div class="text-center">
-                        <span class="d-block h4 text-white mb-0 fw-bold">{{ tratados }}</span>
-                        <small class="text-success text-uppercase fw-bold">Tratados</small>
-                    </div>
-                    <div class="text-center border-start border-secondary ps-5">
-                        <span class="d-block h4 text-white mb-0 fw-bold">{{ pendentes }}</span>
-                        <small class="text-danger text-uppercase fw-bold">Pendentes</small>
-                    </div>
+                <h5 class="text-warning fw-bold mb-4 text-uppercase small" style="letter-spacing: 1px;">
+                    <i class="bi bi-bar-chart-line me-2"></i>Fluxo de Reclamações (Mensal)
+                </h5>
+                <div style="height: 300px;">
+                    <canvas id="reclamacoesChart"></canvas>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-7">
+        <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
             <div class="glass-container p-4 h-100">
-                <h5 class="text-warning fw-bold mb-4 uppercase-label">Ações Administrativas</h5>
+                <h5 class="text-warning fw-bold mb-4 text-uppercase small" style="letter-spacing: 1px;">
+                    Estatísticas de Pedidos
+                </h5>
+                <div style="height: 220px; position: relative;">
+                    <canvas id="graficoVisreci"></canvas>
+                </div>
+                <div class="d-flex justify-content-around mt-4">
+                    <div class="text-center">
+                        <span class="d-block h4 text-white mb-0 fw-bold">{{ tratados }}</span>
+                        <small class="text-success text-uppercase fw-bold" style="font-size: 0.7rem;">Tratados</small>
+                    </div>
+                    <div class="text-center">
+                        <span class="d-block h4 text-white mb-0 fw-bold">{{ pendentes }}</span>
+                        <small class="text-danger text-uppercase fw-bold" style="font-size: 0.7rem;">Pendentes</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12" data-aos="fade-up">
+            <div class="glass-container p-4">
+                <h5 class="text-warning fw-bold mb-4 text-uppercase small" style="letter-spacing: 1px;">Ações
+                    Administrativas</h5>
                 <div class="row g-3">
-                    <div class="col-6">
+                    <div class="col-md-3 col-6">
                         <a href="{{ url_for('admin_pedidos') }}" class="quick-link-btn btn-gold">
-                            <i class="fas fa-clipboard-list mb-2"></i>
+                            <i class="bi bi-clipboard-data mb-2 fs-3"></i>
                             <span>Gerir Pedidos</span>
                         </a>
                     </div>
-                    <div class="col-6">
+                    <div class="col-md-3 col-6">
                         <a href="{{ url_for('exportar_pedidos') }}" class="quick-link-btn btn-green">
-                            <i class="fas fa-file-csv mb-2"></i>
+                            <i class="bi bi-file-earmark-excel mb-2 fs-3"></i>
                             <span>Exportar Excel</span>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <a href="{{ url_for('admin_servicos') }}" class="quick-link-btn btn-blue">
+                            <i class="bi bi-tools mb-2 fs-3"></i>
+                            <span>Editar Serviços</span>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <a href="{{ url_for('admin_logs') }}" class="quick-link-btn btn-outline-light">
+                            <i class="bi bi-shield-check mb-2 fs-3"></i>
+                            <span>Ver Auditoria</span>
                         </a>
                     </div>
                 </div>
@@ -95,25 +132,130 @@
 </div>
 
 <script>
-    const ctx = document.getElementById('graficoVisreci').getContext('2d');
-    new Chart(ctx, {
+    // Gráfico de Barras (Reclamações)
+    const ctxBar = document.getElementById('reclamacoesChart').getContext('2d');
+    new Chart(ctxBar, {
+        type: 'bar',
+        data: {
+            labels: {{ labels_grafico | tojson }},
+        datasets: [{
+            label: 'Número de Queixas',
+            data: {{ dados_grafico | tojson }},
+        backgroundColor: 'rgba(255, 193, 7, 0.6)',
+        borderColor: '#ffc107',
+        borderWidth: 2,
+        borderRadius: 5
+            }]
+        },
+        options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#fff' } },
+            x: { grid: { display: false }, ticks: { color: '#fff' } }
+        },
+        plugins: { legend: { display: false } }
+    }
+    });
+
+    // Gráfico Doughnut (Pedidos)
+    const ctxDoughnut = document.getElementById('graficoVisreci').getContext('2d');
+    new Chart(ctxDoughnut, {
         type: 'doughnut',
         data: {
             labels: ['Pendentes', 'Tratados'],
             datasets: [{
                 data: [{{ pendentes }}, {{ tratados }}],
-        backgroundColor: ['#ff0707', '#2ecc71'],
-        borderColor: 'rgba(197, 160, 33, 0.2)',
-        borderWidth: 1,
-        cutout: '80%'
+        backgroundColor: ['#dc3545', '#198754'],
+        borderColor: 'rgba(26, 26, 26, 1)',
+        borderWidth: 5
     }]
         },
         options: {
         responsive: true,
         maintainAspectRatio: false,
+        cutout: '80%',
         plugins: { legend: { display: false } }
     }
     });
 </script>
+
+<style>
+    .stat-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        transition: 0.3s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .stat-icon {
+        font-size: 2rem;
+    }
+
+    .stat-content h3 {
+        color: white;
+        margin: 0;
+        font-weight: 800;
+        font-size: 1.5rem;
+    }
+
+    .stat-content p {
+        color: rgba(255, 255, 255, 0.6);
+        margin: 0;
+        font-size: 0.8rem;
+    }
+
+    .card-gold .stat-icon {
+        color: #ffc107;
+    }
+
+    .card-blue .stat-icon {
+        color: #0dcaf0;
+    }
+
+    .card-red .stat-icon {
+        color: #dc3545;
+    }
+
+    .card-green .stat-icon {
+        color: #198754;
+    }
+
+    .glass-container {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+    }
+
+    .quick-link-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        border-radius: 15px;
+        text-decoration: none;
+        color: white;
+        transition: 0.3s;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .quick-link-btn:hover {
+        transform: scale(1.05);
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffc107;
+    }
+</style>
 
 {% endblock %}

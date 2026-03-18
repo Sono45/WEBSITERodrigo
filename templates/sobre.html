@@ -1,58 +1,64 @@
-<!-- Menu -->
-{% extends 'menu.html' %}
+{% extends "menu.html" %}
 {% block content %}
-
-<!-- Conteúdo principal -->
-<section id="sobre" class="py-5 mt-5 sobre-section">
-    <div class="container text-center">
-        <h2 class="fw-bold mb-4" data-key="about_title">Sobre Nós</h2>
-        <p class="text-muted fw-normal mb-5" data-key="about_paragraph1">
-            Somos especialistas no tratamento e reciclagem de limalhas metálicas e fluidos refrigerantes,
-            oferecendo soluções ecológicas e eficientes para a indústria. Trabalhamos com tecnologia
-            de ponta para reduzir impactos ambientais e otimizar processos.
-        </p>
-        <p class="text-muted fw-normal mb-5" data-key="about_paragraph2">
-            A nossa missão é contribuir para uma indústria mais sustentável, através da valorização
-            de resíduos metálicos e do reaproveitamento de fluidos. Com anos de experiência no setor,
-            garantimos qualidade, eficiência e compromisso ambiental.
-        </p>
-    </div>
-</section>
-
-<!-- Footer -->
-<footer class="bg-light text-dark text-center text-md-start py-5 mt-5 border-top">
+<section class="py-5 mt-5">
     <div class="container">
-        <div class="row align-items-center">
+        <div class="text-center mb-5 fade-in">
+            <h1 class="fw-bold text-white display-4">Sobre a <span class="text-warning">VISRECI</span></h1>
+            <p class="lead text-muted mx-auto" style="max-width: 700px;">
+                Recuperar, Valorizar e Economizar. Somos especialistas em soluções ambientais para a indústria moderna.
+            </p>
+        </div>
 
-            <div class="col-md-6 mb-4 mb-md-0">
-                <h5 class="fw-bold mb-3" data-key="footer_contacts">Contactos</h5>
-                <p class="mb-1">VISRECI Lda</p>
-                <p class="mb-1">Rua das Leiras 36, 3510-933 Viseu</p>
-                <p class="mb-1"><i class="bi bi-telephone-fill me-2"></i>232 957 388</p>
-                <p class="mb-1"><i class="bi bi-envelope-fill me-2"></i>geral@visreci.pt</p>
-                <p class="mb-0"><i class="bi bi-envelope-fill me-2"></i>rr.info@sapo.pt</p>
+        <div class="row align-items-center mb-5 g-5">
+            <div class="col-md-6">
+                <div class="glass-panel p-2 shadow-lg rounded-4">
+                    <img src="/IMG/Predio Visreci.jpg" class="img-fluid rounded-4 shadow" alt="Instalações">
+                </div>
             </div>
-
-            <div class="col-md-6 d-flex justify-content-center">
-                <div class="ratio ratio-16x9"
-                    style="max-width: 350px; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-                    <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3028.9363821345505!2d-7.952776924893392!3d40.60922724390243!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd2337d6d8230b37%3A0x42514f718bdd3611!2sVISRECI%20Lda!5e0!3m2!1spt-PT!2spt!4v1761820754717!5m2!1spt-PT!2spt"
-                        style="border:0;" allowfullscreen="" loading="lazy"
-                        referrerpolicy="no-referrer-when-downgrade"></iframe>
+            <div class="col-md-6 text-white">
+                <h3 class="fw-bold text-warning mb-3">A Nossa Missão</h3>
+                <p class="opacity-75">A VISRECI nasceu com o propósito de transformar a forma como as indústrias lidam
+                    com os seus resíduos. Focamo-nos na recuperação de lubrificantes e na compactação de limalhas,
+                    permitindo que as empresas reduzam custos e o seu impacto ambiental.</p>
+                <div class="row mt-4">
+                    <div class="col-6">
+                        <h4 class="fw-bold text-white m-0">10+</h4>
+                        <small class="text-warning">Anos de Experiência</small>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="fw-bold text-white m-0">100%</h4>
+                        <small class="text-warning">Foco Ambiental</small>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <hr class="my-4">
-
-        <div class="text-center small text-muted">
-            &copy; 2025 VISRECI Lda. <span data-key="footer_rights">Todos os direitos reservados.</span>
-        </div>
-        <div class="text-center small text-muted" data-key="footer_credit">
-            Projeto desenvolvido por Rodrigo e Lucas no âmbito do Projeto de Aptidão Profissional
+        <div class="row g-4 text-center mt-4">
+            <div class="col-md-4">
+                <div class="glass-card p-4 h-100 border-top border-warning border-3">
+                    <i class="fas fa-leaf fa-3x text-warning mb-3"></i>
+                    <h5 class="fw-bold">Sustentabilidade</h5>
+                    <p class="small text-muted mb-0">Protegemos o ambiente através da economia circular e reutilização
+                        de recursos.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-card p-4 h-100 border-top border-warning border-3">
+                    <i class="fas fa-cogs fa-3x text-warning mb-3"></i>
+                    <h5 class="fw-bold">Inovação</h5>
+                    <p class="small text-muted mb-0">Utilizamos tecnologia de ponta para a compactação e filtragem
+                        industrial.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-card p-4 h-100 border-top border-warning border-3">
+                    <i class="fas fa-handshake fa-3x text-warning mb-3"></i>
+                    <h5 class="fw-bold">Confiança</h5>
+                    <p class="small text-muted mb-0">Trabalhamos lado a lado com os nossos parceiros para resultados
+                        reais.</p>
+                </div>
+            </div>
         </div>
     </div>
-</footer>
-
+</section>
 {% endblock %}

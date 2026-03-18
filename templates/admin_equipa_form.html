@@ -1,54 +1,99 @@
 {% extends "menu.html" %}
-{% block title %}{{ "Editar" if membro else "Novo" }} Membro | Visreci{% endblock %}
-
 {% block content %}
-<section class="py-5 mt-5">
-    <div class="container" style="max-width:720px;">
-        <div class="bg-white rounded-4 shadow-sm p-4">
-            <h2 class="fw-bold mb-4">{{ "Editar membro" if membro else "Novo membro" }}</h2>
+<section class="py-4 mt-5">
+    <div class="container" style="max-width: 800px;">
+        <div class="mb-4">
+            <h3 class="text-white fw-bold">
+                {% if membro %}Editar Membro{% else %}Novo Membro da Equipa{% endif %}
+            </h3>
+            <p class="text-white-50 small">Gere quem aparece na página pública "Sobre Nós".</p>
+        </div>
 
+        <div class="form-glass p-4 p-md-5">
             <form method="POST" enctype="multipart/form-data">
-                <div class="mb-3">
-                    <label class="form-label">Nome</label>
-                    <input class="form-control" name="nome" required value="{{ membro['nome'] if membro else '' }}">
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label text-warning small fw-bold text-uppercase">Nome Completo</label>
+                        <input type="text" name="nome" class="form-control input-glass"
+                            value="{{ membro.nome if membro else '' }}" required placeholder="Ex: Rodrigo Figueiredo">
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label text-warning small fw-bold text-uppercase">Cargo / Função</label>
+                        <input type="text" name="cargo" class="form-control input-glass"
+                            value="{{ membro.cargo if membro else '' }}" required placeholder="Ex: Diretor Técnico">
+                    </div>
                 </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Cargo</label>
-                    <input class="form-control" name="cargo" required value="{{ membro['cargo'] if membro else '' }}">
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Descrição (opcional)</label>
-                    <textarea class="form-control" name="descricao"
-                        rows="3">{{ membro['descricao'] if membro else '' }}</textarea>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Foto</label>
-                    <input class="form-control" type="file" name="foto" accept=".jpg,.jpeg,.png,.webp">
-
-                    {% if membro and membro["foto"] %}
-                    <div class="form-text">Foto atual:</div>
-                    <img src="{{ membro['foto'] }}" style="height:70px;width:70px;object-fit:cover;border-radius:50%;">
-                    {% endif %}
-                </div>
-
 
                 <div class="mb-4">
-                    <label class="form-label">Ativo</label>
-                    <select class="form-select" name="ativo">
-                        <option value="1" {% if not membro or membro['ativo']==1 %}selected{% endif %}>Sim</option>
-                        <option value="0" {% if membro and membro['ativo']==0 %}selected{% endif %}>Não</option>
-                    </select>
+                    <label class="form-label text-warning small fw-bold text-uppercase">Descrição Curta</label>
+                    <textarea name="descricao" class="form-control input-glass" rows="3"
+                        placeholder="Breve resumo sobre o percurso ou especialidade...">{{ membro.descricao if membro else '' }}</textarea>
                 </div>
 
-                <div class="d-flex gap-2">
-                    <button class="btn btn-success" type="submit">Guardar</button>
-                    <a class="btn btn-outline-secondary" href="{{ url_for('admin_equipa') }}">Cancelar</a>
+                <div class="row align-items-end">
+                    <div class="col-md-8 mb-4">
+                        <label class="form-label text-warning small fw-bold text-uppercase">Foto de Perfil</label>
+                        <input type="file" name="foto" class="form-control input-glass">
+                        {% if membro and membro.foto %}
+                        <img src="{{ membro.foto }}" class="rounded-circle mt-2 border border-warning"
+                            style="width: 60px; height: 60px; object-fit: cover;">
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-4 mb-4">
+                        <label class="form-label text-warning small fw-bold text-uppercase">Estado na Web</label>
+                        <select name="ativo" class="form-select input-glass">
+                            <option value="1" {% if membro and membro.ativo==1 %}selected{% endif %}>🟢 Visível (Ativo)
+                            </option>
+                            <option value="0" {% if membro and membro.ativo==0 %}selected{% endif %}>🔴 Oculto (Inativo)
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <hr class="border-secondary opacity-25 my-4">
+
+                <div class="d-flex gap-3">
+                    <button type="submit" class="btn btn-warning fw-bold px-4">
+                        <i class="bi bi-save2 me-2"></i>GUARDAR MEMBRO
+                    </button>
+                    <a href="{{ url_for('admin_equipa') }}" class="btn btn-outline-light px-4">
+                        VOLTAR
+                    </a>
                 </div>
             </form>
         </div>
     </div>
 </section>
+
+<style>
+    /* Reaproveitando os estilos Glassmorphism */
+    .form-glass {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    .input-glass {
+        background: rgba(255, 255, 255, 0.07) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        color: white !important;
+        border-radius: 10px;
+        padding: 12px;
+    }
+
+    .input-glass:focus {
+        background: rgba(255, 255, 255, 0.12) !important;
+        border-color: #ffc107 !important;
+        box-shadow: 0 0 10px rgba(255, 193, 7, 0.2) !important;
+    }
+
+    .input-glass option {
+        background: #222;
+        color: white;
+    }
+</style>
 {% endblock %}

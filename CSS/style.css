@@ -767,3 +767,97 @@ select#filtroEstado {
     color: rgba(255, 255, 255, 0.6) !important;
     font-size: 0.85rem;
 }
+
+/* Container da Imagem Circular */
+.team-img-container {
+    width: 130px;
+    height: 130px;
+    margin: -65px auto 15px; /* Faz a foto sair um pouco para fora do card */
+    border-radius: 50%;
+    padding: 5px;
+    background: linear-gradient(45deg, #ffc107, transparent);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+.team-img-container img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #1a1a1a;
+}
+
+/* O Card em si */
+.team-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 65px; /* Espaço para a foto que sai fora */
+    text-align: center;
+    transition: all 0.4s ease;
+}
+
+.team-card:hover {
+    transform: translateY(-10px);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 193, 7, 0.4);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+}
+
+.team-info h5 {
+    color: #fff;
+    font-size: 1.1rem;
+}
+
+.team-info small {
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+/* Animação de entrada */
+.fade-in {
+    animation: fadeInUp 0.8s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Ajuste das imagens na página Sobre */
+.glass-panel img {
+    transition: transform 0.5s ease;
+}
+
+.glass-panel:hover img {
+    transform: scale(1.02); /* Zoom suave ao passar o rato */
+}
+
+/* Destaque para os ícones nos cards de valores */
+.glass-card i {
+    transition: all 0.3s ease;
+}
+
+.glass-card:hover i {
+    transform: scale(1.1) rotate(5deg);
+    filter: drop-shadow(0 0 10px rgba(255, 193, 7, 0.5));
+}
+
+/* Forçar o texto dos dropdowns a ser visível */
+.input-glass option {
+    background-color: #222 !important;
+    color: #fff !important;
+}
+
+/* Se o texto do input estiver muito claro */
+.input-glass {
+    color: white !important;
+}

@@ -1,0 +1,63 @@
+{% extends "menu.html" %}
+{% block content %}
+<section class="py-5 mt-5">
+    <div class="container">
+        <h2 class="text-white fw-bold mb-4"><i class="fas fa-envelope text-warning me-2"></i>Mensagens de Contacto</h2>
+
+        <div class="table-glass on-dark p-4 shadow-lg">
+            <div class="table-responsive">
+                <table class="table align-middle text-white">
+                    <thead class="text-warning text-uppercase small">
+                        <tr>
+                            <th>Data</th>
+                            <th>Cliente</th>
+                            <th>Assunto</th>
+                            <th class="text-end">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for m in mensagens %}
+                        <tr class="border-bottom border-secondary border-opacity-25">
+                            <td class="small">{{ m.created_at }}</td>
+                            <td>
+                                <b>{{ m.nome }}</b><br>
+                                <small class="text-white-50">{{ m.email }}</small>
+                            </td>
+                            <td>{{ m.assunto }}</td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal"
+                                    data-bs-target="#msg{{ m.id }}">
+                                    <i class="fas fa-eye"></i> Ler Mensagem
+                                </button>
+                            </td>
+                        </tr>
+
+                        <div class="modal fade" id="msg{{ m.id }}" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content bg-dark border-warning border-opacity-25 text-white">
+                                    <div class="modal-header border-secondary">
+                                        <h5 class="modal-title text-warning">Mensagem de {{ m.nome }}</h5>
+                                        <button type="button" class="btn-close btn-close-white"
+                                            data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p><b>Assunto:</b> {{ m.assunto }}</p>
+                                        <div class="p-3 bg-secondary bg-opacity-10 rounded border border-secondary">
+                                            {{ m.mensagem }}
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer border-0">
+                                        <a href="mailto:{{ m.email }}"
+                                            class="btn btn-warning btn-sm fw-bold text-dark">RESPONDER POR EMAIL</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
