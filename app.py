@@ -59,7 +59,8 @@ def save_upload(file_storage, subfolder):
 # --- BASE DE DADOS E LOGS ---
 
 def get_connection():
-    conn = sqlite3.connect("app.db", timeout=10)
+    # Adicionamos o timeout de 20 ou 30 segundos
+    conn = sqlite3.connect("app.db", timeout=30) 
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -179,9 +180,9 @@ def init_db():
 #     return wrapper
 
 def login_required(view_func):
-    @wraps(view_func) # <-- Esta linha impede o loop infinito
+    @wraps(view_func)
     def wrapper(*args, **kwargs):
-        if "user_id" not in session: 
+        if "user_id" not in session:
             return redirect(url_for("login"))
         return view_func(*args, **kwargs)
     return wrapper
@@ -229,31 +230,20 @@ def contactos():
         assunto = request.form.get("assunto")
         mensagem = request.form.get("mensagem")
 
-        # 1. Guardar na Base de Dados
+        # 1. Guarda na Base de Dados (Opcional, mas recomendado)
         conn = get_connection()
-        cursor = conn.cursor()
-        cursor.execute("""
-            INSERT INTO contactos (nome, email, assunto, mensagem) 
-            VALUES (?, ?, ?, ?)
-        """, (nome, email, assunto, mensagem))
+        conn.execute("INSERT INTO contactos (nome, email, assunto, mensagem) VALUES (?, ?, ?, ?)",
+                     (nome, email, assunto, mensagem))
         conn.commit()
         conn.close()
 
-        # 2. Email Automático para o Cliente
-        corpo_cliente = f"""
-        <div style="font-family: Arial, sans-serif; padding: 25px; border: 2px solid #ffc107; border-radius: 10px;">
-            <h2 style="color: #ffc107;">Olá {nome}, recebemos a sua mensagem!</h2>
-            <p>Obrigado por contactar a <b>Visreci</b>. A nossa equipa já recebeu o seu contacto sobre o assunto: <b>{assunto}</b>.</p>
-            <p>Prometemos ser breves na resposta.</p>
-            <hr style="border: 0; border-top: 1px solid #eee;">
-            <p style="font-size: 0.8rem; color: #666;">Este é um email automático, não precisa de responder.</p>
-        </div>
-        """
-        enviar_email(email, "Visreci - Recebemos o seu contacto", corpo_cliente)
+        # 2. Envia o Email Automático (Igual ao que tens nas reclamações)
+        corpo = f"<h2>Novo Contacto de {nome}</h2><p>Assunto: {assunto}</p><p>Mensagem: {mensagem}</p>"
+        enviar_email(EMAIL_USER, f"CONTACTO: {assunto}", corpo)
 
-        flash("Mensagem enviada com sucesso! Responderemos em breve.", "success")
-        return redirect(url_for("contactos"))
-
+        flash("Mensagem enviada com sucesso!", "success")
+        return redirect(url_for("contactos")) # Volta para a página de contacto
+        
     return render_template("contactos.html")
 
 

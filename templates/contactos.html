@@ -10,26 +10,32 @@
                 <div class="contact-form-box flex-fill">
                     <h2 class="fw-bold mb-4 text-light text-center" data-key="contact_title">Entre em contacto
                         connosco</h2>
-                    <form action="https://formsubmit.co/rodrifigueiredo1983@gmail.com" method="POST" id="contactForm"
+                    <form action="{{ url_for('contactos') }}" method="POST" id="contactForm"
                         class="contact-form d-flex flex-column h-100">
                         <div>
                             <div class="mb-3">
                                 <label for="name" class="form-label text-light">Nome Completo</label>
-                                <input type="text" class="form-control" id="name" placeholder="Tomás Lima" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="email" class="form-label text-light">Email</label>
-                                <input type="email" class="form-control" id="email" placeholder="tomaslima77@email.com"
+                                <input type="text" class="form-control" id="name" name="nome" placeholder="Tomás Lima"
                                     required>
                             </div>
                             <div class="mb-3">
+                                <label for="email" class="form-label text-light">Email</label>
+                                <input type="email" class="form-control" id="email" name="email"
+                                    placeholder="tomaslima77@email.com" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="assunto" class="form-label text-light">Assunto</label>
+                                <input type="text" class="form-control" id="assunto" name="assunto"
+                                    placeholder="Assunto do contacto" required>
+                            </div>
+                            <div class="mb-3">
                                 <label for="message" class="form-label text-light">Mensagem</label>
-                                <textarea class="form-control" id="message" rows="3"
+                                <textarea class="form-control" id="message" name="mensagem" rows="3"
                                     placeholder="Escreva a sua mensagem..." required></textarea>
                             </div>
                         </div>
                         <button type="submit" class="btn btn-warning fw-semibold mt-auto">Enviar</button>
-                    </form>
+                    </form> 
                 </div>
             </div>
 

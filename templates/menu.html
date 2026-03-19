@@ -1,294 +1,299 @@
-{% extends "menu.html" %}
-{% block content %}
+<!doctype html>
+<html lang="pt">
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<div class="container-fluid px-5 mt-5">
-    <div class="row mb-5">
-        <div class="col-12" data-aos="fade-down">
-            <h2 class="text-white fw-bold mb-1">Olá, {{ user_name }}!</h2>
-            <div class="badge bg-warning text-dark fw-bold px-3 py-2" style="letter-spacing: 1px;">
-                PAINEL DE CONTROLO VISRECI
+    <title>{% block title %}Visreci{% endblock %}</title>
+
+    <link rel="icon" type="image/x-icon" href="/IMG/favicon.ico">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/CSS/style.css">
+
+    <style>
+        /* CSS para forçar o footer para o fundo */
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1 0 auto;
+            /* Faz o conteúdo principal expandir e empurrar o footer */
+        }
+
+        footer {
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+
+<body class="{% block body_class %}{% endblock %}">
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand mx-auto mx-lg-0 d-flex align-items-center" href="{{ url_for('index') }}">
+                <img src="/IMG/LogoLetra.png" alt="Visreci Logo" class="logo-navbar" style="max-height: 50px;">
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="menuNav">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 fw-semibold">
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Início</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('sobre') }}">Sobre</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('servicos') }}">Serviços</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('contactos') }}">Contactos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('equipa') }}">Equipa</a></li>
+
+                    {% if session.get("user_id") %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle me-1"></i> Olá, {{ session.get("user_name") }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0">
+                            <li><a class="dropdown-item fw-bold text-primary" href="{{ url_for('dashboard') }}">
+                                    <i class="bi bi-speedometer2 me-2"></i>Painel de Gestão
+                                </a></li>
+
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+
+                            {% if session.get("user_role") == "admin" %}
+                            <li><a class="dropdown-item" href="{{ url_for('admin_servicos') }}">
+                                    <i class="bi bi-gear-fill me-2"></i>Gerir Serviços
+                                </a></li>
+
+                            <li><a class="dropdown-item" href="{{ url_for('admin_equipa') }}">
+                                    <i class="bi bi-people-fill me-2"></i>Gerir Equipa
+                                </a></li>
+                            {% endif %}
+
+                            <li><a class="dropdown-item" href="{{ url_for('admin_logs') }}">
+                                    <i class="bi bi-list-check me-2"></i>Auditoria (Logs)
+                                </a></li>
+
+                            <li><a class="dropdown-item" href="{{ url_for('admin_pedidos') }}">
+                                    <i class="bi bi-envelope-paper-fill me-2"></i>Pedidos de Orçamento
+                                </a></li>
+
+                            <li><a class="dropdown-item" href="{{ url_for('admin_reclamacoes') }}">
+                                    <i class="bi bi-chat-square-text-fill me-2"></i>Gestão de Queixas
+                                </a></li>
+
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+
+                            <li><a class="dropdown-item text-danger fw-bold" href="{{ url_for('logout') }}">
+                                    <i class="bi bi-box-arrow-right me-2"></i>Terminar sessão
+                                </a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('login') }}">
+                            <i class="bi bi-lock-fill me-1"></i> Área de Trabalhadores
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-light text-dark text-center text-md-start py-5 mt-5 border-top">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6 mb-4 mb-md-0">
+                    <h5 class="fw-bold mb-3">Contactos</h5>
+                    <p class="mb-1">VISRECI Lda</p>
+                    <p class="mb-1">Rua das Leiras 36, 3510-933 Viseu</p>
+                    <p class="mb-1"><i class="bi bi-telephone-fill me-2"></i> 232 957 388</p>
+                    <p class="mb-1"><i class="bi bi-envelope-fill me-2"></i> geral@visreci.pt</p>
+                    <p class="mb-3"><i class="bi bi-envelope-fill me-2"></i> rr.info@sapo.pt</p>
+                    <a href="/reclamar"
+                        class="text-warning text-decoration-none small fw-bold d-flex align-items-center">
+                        <img src="{{ url_for('static', filename='IMG/logo_LRE_preto positivo.png') }}"
+                            alt="Livro de Reclamações" style="height: 45px; width: auto;" class="me-2">
+                    </a>
+                </div>
+
+                <div class="col-md-6 d-flex justify-content-center">
+                    <div class="ratio ratio-16x9"
+                        style="max-width: 350px; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3027.653457187449!2d-7.9103!3d40.65!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDDCsDM5JzAwLjAiTiA3wrA1NCc0MC4wIlc!5e0!3m2!1spt!2spt!4v1710000000000"
+                            style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4">
+
+            <div class="text-center small text-muted">
+                © 2026 VISRECI Lda. Todos os direitos reservados.
+            </div>
+            <div class="text-center small text-muted">
+                Projeto desenvolvido por Rodrigo e Lucas no âmbito do Projeto de Aptidão Profissional
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <script>
+        {% for category, message in messages %}
+        Swal.fire({
+            title: "{{ 'Sucesso!' if category == 'success' else 'Erro!' }}",
+            text: "{{ message }}",
+            icon: "{{ category }}",
+            confirmButtonColor: '#ffc107',
+            background: '#1a1a1a',
+            color: '#ffffff'
+        });
+        {% endfor %}
+    </script>
+    {% endif %}
+    {% endwith %}
+
+    <div id="cookie-consent" class="cookie-modal shadow-lg" style="display: none;">
+        <div class="cookie-content">
+            <div class="cookie-header">
+                <i class="bi bi-shield-lock-fill text-warning fs-2"></i>
+                <h5 class="text-white mt-2 fw-bold">Privacidade e Cookies</h5>
+            </div>
+            <div class="cookie-body">
+                <p class="text-white-50 small">
+                    A Visreci utiliza cookies para otimizar a sua experiência. Algumas são essenciais para o
+                    funcionamento do painel de gestão, outras ajudam-nos a analisar o tráfego.
+                </p>
+                <div class="cookie-options">
+                    <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" id="cookies-essenciais" checked disabled>
+                        <label class="form-check-label text-white small" for="cookies-essenciais">Necessários (Sempre
+                            ativos)</label>
+                    </div>
+                    <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" id="cookies-analiticos">
+                        <label class="form-check-label text-white small" for="cookies-analiticos">Analíticos e
+                            Estatísticas</label>
+                    </div>
+                </div>
+            </div>
+            <div class="cookie-footer d-grid gap-2 mt-4">
+                <button onclick="saveConsent()" class="btn btn-warning fw-bold btn-sm">ACEITAR SELEÇÃO</button>
+                <button onclick="acceptAllCookies()" class="btn btn-outline-light btn-sm border-0">ACEITAR
+                    TODOS</button>
             </div>
         </div>
     </div>
 
-    <div class="row g-4 mb-5">
-        <div class="col-xl col-md-4" data-aos="zoom-in" data-aos-delay="100">
-            <div class="stat-card card-gold">
-                <div class="stat-icon"><i class="bi bi-gear-fill"></i></div>
-                <div class="stat-content">
-                    <h3>{{ total_servicos }}</h3>
-                    <p>Serviços Ativos</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl col-md-4" data-aos="zoom-in" data-aos-delay="200">
-            <div class="stat-card card-blue">
-                <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
-                <div class="stat-content">
-                    <h3>{{ total_equipa }}</h3>
-                    <p>Membros Equipa</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl col-md-4" data-aos="zoom-in" data-aos-delay="300">
-            <div class="stat-card card-red">
-                <div class="stat-icon"><i class="bi bi-clipboard2-pulse-fill"></i></div>
-                <div class="stat-content">
-                    <h3>{{ pendentes }}</h3>
-                    <p>Pedidos de Orçamento</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl col-md-4" data-aos="zoom-in" data-aos-delay="400">
-            <div class="stat-card" style="border-left: 5px solid #ffc107;">
-                <div class="stat-icon text-warning"><i class="bi bi-envelope-paper-fill"></i></div>
-                <div class="stat-content">
-                    <h3>{{ total_contactos }}</h3>
-                    <p>Mensagens Contacto</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl col-md-4" data-aos="zoom-in" data-aos-delay="500">
-            <div class="stat-card card-red">
-                <div class="stat-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
-                <div class="stat-content">
-                    <h3>{{ total_reclamacoes }}</h3>
-                    <p>Queixas Pendentes</p>
-                </div>
-            </div>
-        </div>
-    </div>
+    <style>
+        .cookie-modal {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 350px;
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 193, 7, 0.2);
+            border-radius: 20px;
+            z-index: 10000;
+            padding: 25px;
+            color: white;
+        }
 
-    <div class="row g-4 mb-5">
-        <div class="col-lg-8" data-aos="fade-up">
-            <div class="glass-container p-4 h-100">
-                <h5 class="text-warning fw-bold mb-4 text-uppercase small" style="letter-spacing: 1px;">
-                    <i class="bi bi-bar-chart-line me-2"></i>Fluxo de Reclamações (Mensal)
-                </h5>
-                <div style="height: 300px;">
-                    <canvas id="reclamacoesChart"></canvas>
-                </div>
-            </div>
-        </div>
+        .cookie-header i {
+            animation: pulse 2s infinite;
+        }
 
-        <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
-            <div class="glass-container p-4 h-100">
-                <h5 class="text-warning fw-bold mb-4 text-uppercase small" style="letter-spacing: 1px;">
-                    Estatísticas de Orçamentos
-                </h5>
-                <div style="height: 220px; position: relative;">
-                    <canvas id="graficoVisreci"></canvas>
-                </div>
-                <div class="d-flex justify-content-around mt-4">
-                    <div class="text-center">
-                        <span class="d-block h4 text-white mb-0 fw-bold">{{ tratados }}</span>
-                        <small class="text-success text-uppercase fw-bold" style="font-size: 0.7rem;">Tratados</small>
-                    </div>
-                    <div class="text-center">
-                        <span class="d-block h4 text-white mb-0 fw-bold">{{ pendentes }}</span>
-                        <small class="text-danger text-uppercase fw-bold" style="font-size: 0.7rem;">Pendentes</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
 
-    <div class="row mb-5">
-        <div class="col-12" data-aos="fade-up">
-            <div class="glass-container p-4">
-                <h5 class="text-warning fw-bold mb-4 text-uppercase small" style="letter-spacing: 1px;">Ações
-                    Administrativas</h5>
-                <div class="row g-3">
-                    <div class="col-md-2 col-6">
-                        <a href="{{ url_for('admin_pedidos') }}" class="quick-link-btn btn-gold">
-                            <i class="bi bi-clipboard-data mb-2 fs-3"></i>
-                            <span>Orçamentos</span>
-                        </a>
-                    </div>
-                    <div class="col-md-2 col-6">
-                        <a href="{{ url_for('admin_contactos') }}" class="quick-link-btn"
-                            style="border-color: #ffc107;">
-                            <i class="bi bi-envelope mb-2 fs-3 text-warning"></i>
-                            <span class="text-warning">Contactos</span>
-                        </a>
-                    </div>
-                    <div class="col-md-2 col-6">
-                        <a href="{{ url_for('admin_servicos') }}" class="quick-link-btn btn-blue">
-                            <i class="bi bi-tools mb-2 fs-3"></i>
-                            <span>Serviços</span>
-                        </a>
-                    </div>
-                    <div class="col-md-2 col-6">
-                        <a href="{{ url_for('admin_equipa') }}" class="quick-link-btn btn-blue">
-                            <i class="bi bi-people mb-2 fs-3"></i>
-                            <span>Equipa</span>
-                        </a>
-                    </div>
-                    <div class="col-md-2 col-6">
-                        <a href="{{ url_for('admin_logs') }}" class="quick-link-btn btn-outline-light">
-                            <i class="bi bi-shield-check mb-2 fs-3"></i>
-                            <span>Auditoria</span>
-                        </a>
-                    </div>
-                    <div class="col-md-2 col-6">
-                        <a href="{{ url_for('exportar_pedidos') }}" class="quick-link-btn btn-green">
-                            <i class="bi bi-file-earmark-excel mb-2 fs-3"></i>
-                            <span>Excel</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+            50% {
+                opacity: 0.5;
+            }
 
-<script>
-    // Gráfico de Barras (Reclamações)
-    const ctxBar = document.getElementById('reclamacoesChart').getContext('2d');
-    new Chart(ctxBar, {
-        type: 'bar',
-        data: {
-            labels: {{ labels_grafico | tojson }},
-        datasets: [{
-            label: 'Número de Queixas',
-            data: {{ dados_grafico | tojson }},
-        backgroundColor: 'rgba(255, 193, 7, 0.6)',
-        borderColor: '#ffc107',
-        borderWidth: 2,
-        borderRadius: 5
-            }]
-        },
-        options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-            y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#fff' } },
-            x: { grid: { display: false }, ticks: { color: '#fff' } }
-        },
-        plugins: { legend: { display: false } }
-    }
-    });
+            100% {
+                opacity: 1;
+            }
+        }
 
-    // Gráfico Doughnut (Orçamentos)
-    const ctxDoughnut = document.getElementById('graficoVisreci').getContext('2d');
-    new Chart(ctxDoughnut, {
-        type: 'doughnut',
-        data: {
-            labels: ['Pendentes', 'Tratados'],
-            datasets: [{
-                data: [{{ pendentes }}, {{ tratados }}],
-        backgroundColor: ['#dc3545', '#198754'],
-        borderColor: 'rgba(26, 26, 26, 1)',
-        borderWidth: 5
-    }]
-        },
-        options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        cutout: '80%',
-        plugins: { legend: { display: false } }
-    }
-    });
-</script>
+        .form-check-input:checked {
+            background-color: #ffc107;
+            border-color: #ffc107;
+        }
 
-<style>
-    /* Teus estilos anteriores mantidos e otimizados */
-    .stat-card {
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 15px;
-        padding: 20px;
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        transition: 0.3s;
-        height: 100%;
-    }
+        @media (max-width: 576px) {
+            .cookie-modal {
+                bottom: 0;
+                right: 0;
+                left: 0;
+                width: 100%;
+                border-radius: 20px 20px 0 0;
+            }
+        }
+    </style>
 
-    .stat-card:hover {
-        transform: translateY(-5px);
-        background: rgba(255, 255, 255, 0.08);
-    }
+    <script>
+        // Verifica se já existe consentimento ao carregar a página
+        document.addEventListener("DOMContentLoaded", function () {
+            if (!localStorage.getItem("visreci_cookie_consent")) {
+                setTimeout(() => {
+                    document.getElementById("cookie-consent").style.display = "block";
+                }, 1000);
+            }
+        });
 
-    .stat-icon {
-        font-size: 2rem;
-    }
+        function saveConsent() {
+            const analiticos = document.getElementById("cookies-analiticos").checked;
+            const consent = {
+                essenciais: true,
+                analiticos: analiticos,
+                data: new Date().toISOString()
+            };
+            localStorage.setItem("visreci_cookie_consent", JSON.stringify(consent));
+            closeBanner();
+        }
 
-    .stat-content h3 {
-        color: white;
-        margin: 0;
-        font-weight: 800;
-        font-size: 1.5rem;
-    }
+        function acceptAllCookies() {
+            const consent = {
+                essenciais: true,
+                analiticos: true,
+                data: new Date().toISOString()
+            };
+            localStorage.setItem("visreci_cookie_consent", JSON.stringify(consent));
+            closeBanner();
+        }
 
-    .stat-content p {
-        color: rgba(255, 255, 255, 0.6);
-        margin: 0;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-    }
+        function closeBanner() {
+            document.getElementById("cookie-consent").style.opacity = "0";
+            setTimeout(() => {
+                document.getElementById("cookie-consent").style.display = "none";
+            }, 500);
+        }
+    </script>
+</body>
 
-    .card-gold {
-        border-left: 5px solid #ffc107;
-    }
-
-    .card-gold .stat-icon {
-        color: #ffc107;
-    }
-
-    .card-blue {
-        border-left: 5px solid #0dcaf0;
-    }
-
-    .card-blue .stat-icon {
-        color: #0dcaf0;
-    }
-
-    .card-red {
-        border-left: 5px solid #dc3545;
-    }
-
-    .card-red .stat-icon {
-        color: #dc3545;
-    }
-
-    .card-green {
-        border-left: 5px solid #198754;
-    }
-
-    .card-green .stat-icon {
-        color: #198754;
-    }
-
-    .glass-container {
-        background: rgba(255, 255, 255, 0.03);
-        backdrop-filter: blur(15px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 20px;
-    }
-
-    .quick-link-btn {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 15px;
-        border-radius: 15px;
-        text-decoration: none;
-        color: white;
-        transition: 0.3s;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        font-size: 0.8rem;
-    }
-
-    .quick-link-btn:hover {
-        transform: scale(1.05);
-        background: rgba(255, 255, 255, 0.1);
-        color: #ffc107;
-    }
-</style>
-
-{% endblock %}
+</html>
