@@ -32,7 +32,7 @@
    2) BASE / FUNDO
    ========================= */
 body {
-    background-image: url('/IMG/Background 2.jpg');
+    background-image: url('/IMG/fundo.jpg');
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
