@@ -31,26 +31,34 @@
 /* =========================
    2) BASE / FUNDO
    ========================= */
+/* =========================
+   2) BASE / FUNDO (Versão Final PC + iPhone)
+   ========================= */
 body {
-    background-image: url('/IMG/fundo.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-attachment: fixed;
+    margin: 0;
+    padding: 0;
     font-family: 'Inter', sans-serif;
-    position: relative;
     min-height: 100vh;
+    background: none; /* Removemos do body para não bugar no iOS */
 }
 
-/* Overlay escuro + blur leve (para legibilidade) */
 body::before {
     content: "";
     position: fixed;
-    inset: 0;
+    inset: 0; /* Ocupa o ecrã todo */
     z-index: -1;
-    background: rgba(0, 0, 0, .25);
+
+    /* CAMADA 1: O Overlay e o Blur | CAMADA 2: A Imagem */
+    /* Nota: Usamos o caminho '../' se o teu CSS estiver numa pasta própria */
+    background: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), 
+                url('../IMG/fundo.jpg') no-repeat center center;
+    
+    background-size: cover;
     backdrop-filter: blur(1.5px);
-    -webkit-backdrop-filter: blur(1.5px);
+    -webkit-backdrop-filter: blur(1.5px); /* Suporte para Safari/iPhone */
+    
+    /* Importante para iOS: No elemento fixo usamos scroll */
+    background-attachment: scroll; 
 }
 
 /* Evita navbar tapar âncoras */
