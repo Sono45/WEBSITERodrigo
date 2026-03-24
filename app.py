@@ -672,41 +672,6 @@ def reclamar():
     
     return render_template("reclamar.html")
 
-@app.route("/admin/reclamacoes")
-@login_required
-def admin_reclamacoes():
-    conn = get_connection()
-    # Vamos buscar as reclamações, as mais recentes primeiro
-    res = conn.execute("SELECT * FROM reclamacoes ORDER BY created_at DESC").fetchall()
-    conn.close()
-    return render_template("admin_reclamacoes.html", reclamacoes=res)
-
-@app.route("/admin/reclamacoes/<int:id>/responder", methods=["POST"])
-@login_required
-def admin_reclamacao_responder(id):
-    estado = request.form.get("estado")
-    
-    conn = get_connection()
-    conn.execute("UPDATE reclamacoes SET estado = ? WHERE id = ?", (estado, id))
-    conn.commit()
-    conn.close()
-    
-    log_action("UPDATE", "RECLAMACAO", id, f"Estado alterado para: {estado}")
-    flash("Reclamação marcada como resolvida!", "success")
-    return redirect(url_for("admin_reclamacoes"))
-
-@app.route("/admin/reclamacoes/<int:id>/remover", methods=["POST"])
-@login_required
-def admin_reclamacao_remover(id):
-    conn = get_connection()
-    conn.execute("DELETE FROM reclamacoes WHERE id = ?", (id,))
-    conn.commit()
-    conn.close()
-    
-    log_action("DELETE", "RECLAMACAO", id, "Reclamação apagada")
-    flash("Reclamação removida com sucesso!", "success")
-    return redirect(url_for("admin_reclamacoes"))
-
 @app.route("/aceitar-cookies")
 def aceitar_cookies():
     # Redireciona para a página anterior ou para a home
