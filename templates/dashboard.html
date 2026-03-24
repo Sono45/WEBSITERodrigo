@@ -8,13 +8,13 @@
         <div class="col-12" data-aos="fade-down">
             <h2 class="text-white fw-bold mb-1">Olá, {{ user_name }}!</h2>
             <div class="badge bg-warning text-dark fw-bold px-3 py-2" style="letter-spacing: 1px;">
-                PAINEL DE CONTROLO VISRECI
+                PAINEL DE ADMINISTRAÇÃO VISRECI
             </div>
         </div>
     </div>
 
     <div class="row g-4 mb-5">
-        <div class="col-xl col-md-4" data-aos="zoom-in" data-aos-delay="100">
+        <div class="col-md-3" data-aos="zoom-in" data-aos-delay="100">
             <div class="stat-card card-gold">
                 <div class="stat-icon"><i class="bi bi-gear-fill"></i></div>
                 <div class="stat-content">
@@ -23,73 +23,69 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl col-md-4" data-aos="zoom-in" data-aos-delay="200">
+        <div class="col-md-3" data-aos="zoom-in" data-aos-delay="200">
             <div class="stat-card card-blue">
                 <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
                 <div class="stat-content">
                     <h3>{{ total_equipa }}</h3>
-                    <p>Membros Equipa</p>
+                    <p>Membros da Equipa</p>
                 </div>
             </div>
         </div>
-        <div class="col-xl col-md-4" data-aos="zoom-in" data-aos-delay="300">
+        <div class="col-md-3" data-aos="zoom-in" data-aos-delay="300">
             <div class="stat-card card-red">
-                <div class="stat-icon"><i class="bi bi-exclamation-octagon-fill"></i></div>
+                <div class="stat-icon"><i class="bi bi-clock-history"></i></div>
                 <div class="stat-content">
                     <h3>{{ pendentes }}</h3>
                     <p>Pedidos Pendentes</p>
                 </div>
             </div>
         </div>
-        <div class="col-xl col-md-6" data-aos="zoom-in" data-aos-delay="400">
+        <div class="col-md-3" data-aos="zoom-in" data-aos-delay="400">
             <div class="stat-card card-green">
-                <div class="stat-icon"><i class="bi bi-shield-lock-fill"></i></div>
+                <div class="stat-icon"><i class="bi bi-check-circle-fill"></i></div>
                 <div class="stat-content">
-                    <h3>{{ total_trabalhadores }}</h3>
-                    <p>Administradores</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl col-md-6" data-aos="zoom-in" data-aos-delay="500">
-            <div class="stat-card card-red">
-                <div class="stat-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
-                <div class="stat-content">
-                    <h3>{{ total_reclamacoes }}</h3>
-                    <p>Queixas Pendentes</p>
+                    <h3>{{ tratados }}</h3>
+                    <p>Pedidos Tratados</p>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="row g-4 mb-5">
-        <div class="col-lg-8" data-aos="fade-up">
+        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="200">
             <div class="glass-container p-4 h-100">
                 <h5 class="text-warning fw-bold mb-4 text-uppercase small" style="letter-spacing: 1px;">
-                    <i class="bi bi-bar-chart-line me-2"></i>Fluxo de Reclamações (Mensal)
+                    Estado dos Pedidos de Orçamento (Rácio)
                 </h5>
-                <div style="height: 300px;">
-                    <canvas id="reclamacoesChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
-            <div class="glass-container p-4 h-100">
-                <h5 class="text-warning fw-bold mb-4 text-uppercase small" style="letter-spacing: 1px;">
-                    Estatísticas de Pedidos
-                </h5>
-                <div style="height: 220px; position: relative;">
-                    <canvas id="graficoVisreci"></canvas>
+                <div style="height: 300px; position: relative;">
+                    <canvas id="graficoPedidosVisreci"></canvas>
                 </div>
                 <div class="d-flex justify-content-around mt-4">
                     <div class="text-center">
-                        <span class="d-block h4 text-white mb-0 fw-bold">{{ tratados }}</span>
-                        <small class="text-success text-uppercase fw-bold" style="font-size: 0.7rem;">Tratados</small>
+                        <span class="d-block h3 text-white mb-0 fw-bold">{{ tratados }}</span>
+                        <small class="text-success text-uppercase fw-bold" style="font-size: 0.75rem;">Tratados</small>
                     </div>
                     <div class="text-center">
-                        <span class="d-block h4 text-white mb-0 fw-bold">{{ pendentes }}</span>
-                        <small class="text-danger text-uppercase fw-bold" style="font-size: 0.7rem;">Pendentes</small>
+                        <span class="d-block h3 text-white mb-0 fw-bold">{{ pendentes }}</span>
+                        <small class="text-danger text-uppercase fw-bold" style="font-size: 0.75rem;">Pendentes</small>
                     </div>
+                    <div class="text-center">
+                        <span class="d-block h3 text-white mb-0 fw-bold">{{ pendentes + tratados }}</span>
+                        <small class="text-info text-uppercase fw-bold" style="font-size: 0.75rem;">Total</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="300">
+            <div class="glass-container p-4 h-100">
+                <h5 class="text-warning fw-bold mb-4 text-uppercase small" style="letter-spacing: 1px;">Informação
+                    Operacional</h5>
+                <p class="text-white-50">O gráfico ao lado reflete o desempenho da equipa na resposta aos orçamentos. A
+                    nossa meta é reduzir o número de pedidos pendentes para zero, maximizando a eficiência da VISRECI.
+                </p>
+                <div class="alert alert-dark bg-dark text-white border-0 mt-3" role="alert">
+                    <i class="bi bi-info-circle text-warning me-2"></i> Lembra-te de verificar a auditoria regularmente.
                 </div>
             </div>
         </div>
@@ -98,31 +94,31 @@
     <div class="row mb-5">
         <div class="col-12" data-aos="fade-up">
             <div class="glass-container p-4">
-                <h5 class="text-warning fw-bold mb-4 text-uppercase small" style="letter-spacing: 1px;">Ações
-                    Administrativas</h5>
+                <h5 class="text-warning fw-bold mb-4 text-uppercase small" style="letter-spacing: 1px;">Gestão Direta
+                </h5>
                 <div class="row g-3">
                     <div class="col-md-3 col-6">
-                        <a href="{{ url_for('admin_pedidos') }}" class="quick-link-btn btn-gold">
-                            <i class="bi bi-clipboard-data mb-2 fs-3"></i>
+                        <a href="{{ url_for('admin_pedidos') }}" class="quick-link-btn">
+                            <i class="bi bi-clipboard-data fs-2 text-warning mb-2"></i>
                             <span>Gerir Pedidos</span>
                         </a>
                     </div>
                     <div class="col-md-3 col-6">
-                        <a href="{{ url_for('exportar_pedidos') }}" class="quick-link-btn btn-green">
-                            <i class="bi bi-file-earmark-excel mb-2 fs-3"></i>
-                            <span>Exportar Excel</span>
-                        </a>
-                    </div>
-                    <div class="col-md-3 col-6">
-                        <a href="{{ url_for('admin_servicos') }}" class="quick-link-btn btn-blue">
-                            <i class="bi bi-tools mb-2 fs-3"></i>
+                        <a href="{{ url_for('admin_servicos') }}" class="quick-link-btn">
+                            <i class="bi bi-pencil-square fs-2 text-info mb-2"></i>
                             <span>Editar Serviços</span>
                         </a>
                     </div>
                     <div class="col-md-3 col-6">
-                        <a href="{{ url_for('admin_logs') }}" class="quick-link-btn btn-outline-light">
-                            <i class="bi bi-shield-check mb-2 fs-3"></i>
-                            <span>Ver Auditoria</span>
+                        <a href="{{ url_for('admin_equipa') }}" class="quick-link-btn">
+                            <i class="bi bi-person-plus fs-2 text-success mb-2"></i>
+                            <span>Gerir Equipa</span>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <a href="{{ url_for('admin_logs') }}" class="quick-link-btn">
+                            <i class="bi bi-shield-lock fs-2 text-light mb-2"></i>
+                            <span>Auditoria/Logs</span>
                         </a>
                     </div>
                 </div>
@@ -132,55 +128,38 @@
 </div>
 
 <script>
-    // Gráfico de Barras (Reclamações)
-    const ctxBar = document.getElementById('reclamacoesChart').getContext('2d');
-    new Chart(ctxBar, {
-        type: 'bar',
-        data: {
-            labels: {{ labels_grafico | tojson }},
-        datasets: [{
-            label: 'Número de Queixas',
-            data: {{ dados_grafico | tojson }},
-        backgroundColor: 'rgba(255, 193, 7, 0.6)',
-        borderColor: '#ffc107',
-        borderWidth: 2,
-        borderRadius: 5
-            }]
-        },
-        options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-            y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#fff' } },
-            x: { grid: { display: false }, ticks: { color: '#fff' } }
-        },
-        plugins: { legend: { display: false } }
-    }
-    });
-
-    // Gráfico Doughnut (Pedidos)
-    const ctxDoughnut = document.getElementById('graficoVisreci').getContext('2d');
+    // Configuração do Gráfico Doughnut (A Roda)
+    const ctxDoughnut = document.getElementById('graficoPedidosVisreci').getContext('2d');
     new Chart(ctxDoughnut, {
         type: 'doughnut',
         data: {
             labels: ['Pendentes', 'Tratados'],
             datasets: [{
                 data: [{{ pendentes }}, {{ tratados }}],
+        // Vermelho para Pendentes, Verde para Tratados
         backgroundColor: ['#dc3545', '#198754'],
-        borderColor: 'rgba(26, 26, 26, 1)',
-        borderWidth: 5
+        borderColor: 'rgba(26, 26, 26, 1)', // Borda escura para combinar com o fundo
+        borderWidth: 6,
+        hoverOffset: 15
     }]
         },
         options: {
         responsive: true,
         maintainAspectRatio: false,
-        cutout: '80%',
-        plugins: { legend: { display: false } }
+        cutout: '80%', // Faz o buraco do meio maior (efeito anel)
+        plugins: {
+            legend: {
+                display: true,
+                position: 'bottom',
+                labels: { color: '#fff', font: { size: 12, weight: 'bold' } }
+            }
+        }
     }
     });
 </script>
 
 <style>
+    /* Estilos para o Painel Administrativo Moderno (Glassmorphism) */
     .stat-card {
         background: rgba(255, 255, 255, 0.05);
         backdrop-filter: blur(10px);
@@ -190,7 +169,7 @@
         display: flex;
         align-items: center;
         gap: 15px;
-        transition: 0.3s;
+        transition: 0.3s ease;
     }
 
     .stat-card:hover {
@@ -199,20 +178,20 @@
     }
 
     .stat-icon {
-        font-size: 2rem;
+        font-size: 2.2rem;
     }
 
     .stat-content h3 {
         color: white;
         margin: 0;
         font-weight: 800;
-        font-size: 1.5rem;
+        font-size: 1.6rem;
     }
 
     .stat-content p {
         color: rgba(255, 255, 255, 0.6);
         margin: 0;
-        font-size: 0.8rem;
+        font-size: 0.85rem;
     }
 
     .card-gold .stat-icon {
@@ -242,13 +221,13 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 20px;
+        padding: 25px;
         border-radius: 15px;
         text-decoration: none;
         color: white;
-        transition: 0.3s;
         background: rgba(255, 255, 255, 0.05);
         border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: 0.3s;
     }
 
     .quick-link-btn:hover {

@@ -284,29 +284,32 @@ def logout():
 def dashboard():
     conn = get_connection()
     
-    # ... (as tuas contagens anteriores: total_servicos, total_equipa, etc.) ...
+    # Contagens de Recursos
     total_servicos = conn.execute("SELECT COUNT(*) FROM servicos").fetchone()[0]
     total_trabalhadores = conn.execute("SELECT COUNT(*) FROM trabalhadores").fetchone()[0]
     total_equipa = conn.execute("SELECT COUNT(*) FROM equipa").fetchone()[0]
+    
+    # Gestão de Orçamentos (Substitui a lógica de queixas)
     pendentes = conn.execute("SELECT COUNT(*) FROM pedidos_orcamento WHERE tratado = 0").fetchone()[0]
     tratados = conn.execute("SELECT COUNT(*) FROM pedidos_orcamento WHERE tratado = 1").fetchone()[0]
-    total_reclamacoes = conn.execute("SELECT COUNT(*) FROM reclamacoes WHERE estado = 'Pendente'").fetchone()[0]
+    total_pedidos = pendentes + tratados
 
-    # --- LÓGICA DO GRÁFICO DE RECLAMAÇÕES ---
-    # Vamos buscar os últimos 6 meses
+    # --- LÓGICA DO GRÁFICO (Agora focado em Pedidos de Orçamento) ---
+    # Vamos buscar o volume de pedidos dos últimos meses para o gráfico
     stats_query = """
         SELECT strftime('%m', created_at) as mes, COUNT(*) as total 
-        FROM reclamacoes 
+        FROM pedidos_orcamento 
         GROUP BY mes 
         ORDER BY mes ASC 
         LIMIT 6
     """
     stats_rows = conn.execute(stats_query).fetchall()
     
-    # Converter para listas para o Javascript
     meses_nomes = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"]
-    labels_grafico = [meses_nomes[int(r['mes'])-1] for r in stats_rows]
-    dados_grafico = [r['total'] for r in stats_rows]
+    
+    # Se não houver dados, enviamos listas vazias para não dar erro
+    labels_grafico = [meses_nomes[int(r['mes'])-1] for r in stats_rows] if stats_rows else ["Sem dados"]
+    dados_grafico = [r['total'] for r in stats_rows] if stats_rows else [0]
     
     conn.close()
     
@@ -317,11 +320,9 @@ def dashboard():
                         total_equipa=total_equipa,
                         pendentes=pendentes,
                         tratados=tratados,
-                        total_pedidos=pendentes+tratados,
-                        total_reclamacoes=total_reclamacoes,
-                        labels_grafico=labels_grafico, # Passar para o HTML
-                        dados_grafico=dados_grafico)   # Passar para o HTML
-# --- GESTÃO DE SERVIÇOS ---
+                        total_pedidos=total_pedidos,
+                        labels_grafico=labels_grafico,
+                        dados_grafico=dados_grafico)
 
 @app.route("/admin/servicos")
 @login_required
