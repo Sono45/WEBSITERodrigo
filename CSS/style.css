@@ -437,7 +437,7 @@ footer {
 
 
 /* =========================
-   9) LOGIN (Área de Trabalhadores) - scoped
+   9) LOGIN (Área Reservada) - scoped
    ========================= */
 .page-login .login-card {
     max-width: 420px;
@@ -869,3 +869,5 @@ select#filtroEstado {
 .input-glass {
     color: white !important;
 }
+
+
