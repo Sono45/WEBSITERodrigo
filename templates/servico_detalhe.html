@@ -1,58 +1,60 @@
 {% extends "menu.html" %}
 {% block content %}
-
-<section class="py-5 mt-4">
+<section class="py-5 mt-5">
     <div class="container">
-        <div class="glass-panel on-dark p-4 fade-in">
-            <div class="row align-items-center">
-
-                <div class="col-md-5 text-center mb-4 mb-md-0">
-                    <img src="{{ servico['imagem'] }}"
-                        class="img-fluid rounded-circle shadow-lg border border-warning border-4"
-                        style="width: 320px; height: 320px; object-fit: cover;">
+        <div class="industrial-detail-panel shadow-lg">
+            <div class="row g-0">
+                <div class="col-lg-6 detail-img-bg d-flex align-items-center justify-content-center p-5">
+                    <img src="{{ servico['imagem'] }}" class="img-fluid main-product-img" alt="{{ servico['titulo'] }}">
                 </div>
 
-                <div class="col-md-7">
-                    <h2 class="fw-bold text-white">{{ servico['titulo'] }}</h2>
-                    <p class="text-muted mt-3" style="font-size: 1.1rem; line-height: 1.6;">
+                <div class="col-lg-6 p-5 bg-white">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-2">
+                            <li class="breadcrumb-item"><a href="{{ url_for('servicos') }}"
+                                    class="text-warning">Produtos</a></li>
+                            <li class="breadcrumb-item active">{{ servico['titulo'] }}</li>
+                        </ol>
+                    </nav>
+
+                    <h2 class="fw-bold text-dark mb-1">{{ servico['titulo'] }}</h2>
+                    <div class="yellow-divider mb-4"></div>
+
+                    <h6 class="text-uppercase fw-bold text-muted small mb-3">Descrição Técnica</h6>
+                    <p class="text-secondary mb-5" style="font-size: 1.05rem; line-height: 1.8; text-align: justify;">
                         {{ servico['descricao'] }}
                     </p>
 
-                    <hr class="my-4 border-secondary opacity-25">
-
-                    <h5 class="fw-bold mb-3 text-warning"><i class="fas fa-file-invoice-dollar me-2"></i>Pedir Orçamento
-                    </h5>
-
-                    <form action="{{ url_for('pedir_orcamento') }}" method="POST">
-                        <input type="hidden" name="servico_id" value="{{ servico['id'] }}">
-
-                        <div class="mb-3">
-                            <label class="text-warning small fw-bold mb-1">O SEU NOME</label>
-                            <input type="text" name="nome" class="form-control input-glass" placeholder="Ex: João Silva"
-                                required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="text-warning small fw-bold mb-1">O SEU EMAIL</label>
-                            <input type="email" name="email" class="form-control input-glass"
-                                placeholder="exemplo@email.com" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="text-warning small fw-bold mb-1">MENSAGEM / NECESSIDADE</label>
-                            <textarea name="mensagem" class="form-control input-glass" rows="4"
-                                placeholder="Descreva brevemente o que procura para este serviço..."
-                                required></textarea>
-                        </div>
-
-                        <button type="submit" class="btn btn-visreci px-5 py-2 fw-bold shadow">
-                            Enviar Pedido de Orçamento
-                        </button>
-                    </form>
+                    <div class="quote-form-container">
+                        <h5 class="fw-bold mb-3 text-dark"><i
+                                class="bi bi-chat-left-dots-fill text-warning me-2"></i>Pedir Cotação</h5>
+                        <form action="{{ url_for('pedir_orcamento') }}" method="POST">
+                            <input type="hidden" name="servico_id" value="{{ servico['id'] }}">
+                            <div class="row g-2">
+                                <div class="col-md-6 mb-3">
+                                    <input type="text" name="nome" class="form-control" placeholder="Seu Nome" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <input type="email" name="email" class="form-control" placeholder="Seu Email"
+                                        required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <textarea name="mensagem" class="form-control" rows="2"
+                                    placeholder="Dúvidas ou especificações extras..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-warning w-100 fw-bold py-2">SOLICITAR
+                                ORÇAMENTO</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
+        <div class="mt-4">
+            <a href="{{ url_for('servicos') }}" class="text-white-50 text-decoration-none">
+                <i class="bi bi-arrow-left me-1"></i> Voltar ao catálogo
+            </a>
+        </div>
     </div>
 </section>
-
 {% endblock %}

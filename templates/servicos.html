@@ -1,32 +1,27 @@
-<!-- Menu -->
 {% extends 'menu.html' %}
 {% block content %}
 <section class="py-5 mt-4">
     <div class="container">
-        <div class="glass-panel p-4 on-dark">
-            <h2 class="fw-bold mb-4 text-warning">Serviços</h2>
+        <div class="row mb-5 text-center" data-aos="fade-down">
+            <h2 class="fw-bold text-white display-6">CATÁLOGO DE <span class="text-warning">EQUIPAMENTOS</span></h2>
+            <p class="text-white-50">Selecione um produto para ver especificações e solicitar orçamento.</p>
+        </div>
 
-            <div class="row g-4">
-                {% for s in servicos %}
-                <div class="col-md-4 col-sm-6">
-                    <div class="glass-card p-4 text-center h-100 d-flex flex-column">
-                        <img src="{{ s['imagem'] }}" class="rounded-circle img-fluid mx-auto shadow"
-                            style="width:180px; height:180px; object-fit:cover; border: 3px solid rgba(197, 160, 33, 0.3);">
-
-                        <h5 class="fw-bold mt-3 text-white">{{ s['titulo'] }}</h5>
-
-                        <p class="text-muted mb-4" style="flex-grow: 1;">{{ s['descricao'] }}</p>
-
-                        <div class="mt-auto">
-                            <a href="{{ url_for('servico_detalhe', servico_id=s['id']) }}"
-                                class="btn btn-visreci w-100 py-2 fw-bold">
-                                Pedir Orçamento
-                            </a>
+        <div class="row g-4 justify-content-center">
+            {% for s in servicos %}
+            <div class="col-lg-3 col-md-4 col-6" data-aos="fade-up">
+                <a href="{{ url_for('servico_detalhe', servico_id=s['id']) }}" class="text-decoration-none">
+                    <div class="service-compact-card">
+                        <div class="service-img-mini">
+                            <img src="{{ s['imagem'] }}" alt="{{ s['titulo'] }}">
+                        </div>
+                        <div class="service-title-box">
+                            <h6 class="fw-bold m-0">{{ s['titulo'] }}</h6>
                         </div>
                     </div>
-                </div>
-                {% endfor %}
+                </a>
             </div>
+            {% endfor %}
         </div>
     </div>
 </section>

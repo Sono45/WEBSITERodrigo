@@ -39,26 +39,29 @@ body {
     padding: 0;
     font-family: 'Inter', sans-serif;
     min-height: 100vh;
-    background: none; /* Removemos do body para não bugar no iOS */
+    background: none;
+    /* Removemos do body para não bugar no iOS */
 }
 
 body::before {
     content: "";
     position: fixed;
-    inset: 0; /* Ocupa o ecrã todo */
+    inset: 0;
+    /* Ocupa o ecrã todo */
     z-index: -1;
 
     /* CAMADA 1: O Overlay e o Blur | CAMADA 2: A Imagem */
     /* Nota: Usamos o caminho '../' se o teu CSS estiver numa pasta própria */
-    background: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), 
-                url('../IMG/fundo.jpg') no-repeat center center;
-    
+    background: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
+        url('../IMG/fundo.jpg') no-repeat center center;
+
     background-size: cover;
     backdrop-filter: blur(1.5px);
-    -webkit-backdrop-filter: blur(1.5px); /* Suporte para Safari/iPhone */
-    
+    -webkit-backdrop-filter: blur(1.5px);
+    /* Suporte para Safari/iPhone */
+
     /* Importante para iOS: No elemento fixo usamos scroll */
-    background-attachment: scroll; 
+    background-attachment: scroll;
 }
 
 /* Evita navbar tapar âncoras */
@@ -576,17 +579,19 @@ footer {
 }
 
 /* 3. Inputs e Selects */
-.custom-input, 
+.custom-input,
 #filtroEstado {
     background-color: rgba(255, 255, 255, 0.08) !important;
     border: 1px solid rgba(197, 160, 33, 0.5) !important;
     color: white !important;
     height: 46px !important;
-    border-radius: 0 8px 8px 0 !important; /* Arredonda apenas direita quando tem ícone */
+    border-radius: 0 8px 8px 0 !important;
+    /* Arredonda apenas direita quando tem ícone */
 }
 
 select#filtroEstado {
-    border-radius: 8px !important; /* Arredonda tudo no select */
+    border-radius: 8px !important;
+    /* Arredonda tudo no select */
 }
 
 .input-group-text {
@@ -678,10 +683,21 @@ select#filtroEstado {
 }
 
 /* Bordas coloridas discretas à esquerda */
-.card-servicos { border-left: 4px solid #ffc107; }
-.card-equipa { border-left: 4px solid #0dcaf0; }
-.card-pendentes { border-left: 4px solid #dc3545; }
-.card-admin { border-left: 4px solid #198754; }
+.card-servicos {
+    border-left: 4px solid #ffc107;
+}
+
+.card-equipa {
+    border-left: 4px solid #0dcaf0;
+}
+
+.card-pendentes {
+    border-left: 4px solid #dc3545;
+}
+
+.card-admin {
+    border-left: 4px solid #198754;
+}
 
 /* --- NOVO DESIGN DASHBOARD --- */
 
@@ -737,10 +753,25 @@ select#filtroEstado {
 }
 
 /* Cores dos Ícones */
-.card-gold .stat-icon { color: #ffc107; box-shadow: 0 0 15px rgba(255, 193, 7, 0.2); }
-.card-blue .stat-icon { color: #0dcaf0; box-shadow: 0 0 15px rgba(13, 202, 240, 0.2); }
-.card-red .stat-icon { color: #ff4d4d; box-shadow: 0 0 15px rgba(255, 77, 77, 0.2); }
-.card-green .stat-icon { color: #2ecc71; box-shadow: 0 0 15px rgba(46, 204, 113, 0.2); }
+.card-gold .stat-icon {
+    color: #ffc107;
+    box-shadow: 0 0 15px rgba(255, 193, 7, 0.2);
+}
+
+.card-blue .stat-icon {
+    color: #0dcaf0;
+    box-shadow: 0 0 15px rgba(13, 202, 240, 0.2);
+}
+
+.card-red .stat-icon {
+    color: #ff4d4d;
+    box-shadow: 0 0 15px rgba(255, 77, 77, 0.2);
+}
+
+.card-green .stat-icon {
+    color: #2ecc71;
+    box-shadow: 0 0 15px rgba(46, 204, 113, 0.2);
+}
 
 /* Botões de Ação */
 .quick-link-btn {
@@ -756,14 +787,33 @@ select#filtroEstado {
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.quick-link-btn i { font-size: 2rem; }
-.quick-link-btn span { font-weight: 700; margin-top: 10px; font-size: 0.9rem; }
+.quick-link-btn i {
+    font-size: 2rem;
+}
 
-.btn-gold { color: #ffc107; }
-.btn-gold:hover { background: rgba(255, 193, 7, 0.1); border-color: #ffc107; }
+.quick-link-btn span {
+    font-weight: 700;
+    margin-top: 10px;
+    font-size: 0.9rem;
+}
 
-.btn-green { color: #2ecc71; }
-.btn-green:hover { background: rgba(46, 204, 113, 0.1); border-color: #2ecc71; }
+.btn-gold {
+    color: #ffc107;
+}
+
+.btn-gold:hover {
+    background: rgba(255, 193, 7, 0.1);
+    border-color: #ffc107;
+}
+
+.btn-green {
+    color: #2ecc71;
+}
+
+.btn-green:hover {
+    background: rgba(46, 204, 113, 0.1);
+    border-color: #2ecc71;
+}
 
 .uppercase-label {
     letter-spacing: 2px;
@@ -780,11 +830,12 @@ select#filtroEstado {
 .team-img-container {
     width: 130px;
     height: 130px;
-    margin: -65px auto 15px; /* Faz a foto sair um pouco para fora do card */
+    margin: -65px auto 15px;
+    /* Faz a foto sair um pouco para fora do card */
     border-radius: 50%;
     padding: 5px;
     background: linear-gradient(45deg, #ffc107, transparent);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
 }
 
 .team-img-container img {
@@ -802,7 +853,8 @@ select#filtroEstado {
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 20px;
     padding: 20px;
-    margin-top: 65px; /* Espaço para a foto que sai fora */
+    margin-top: 65px;
+    /* Espaço para a foto que sai fora */
     text-align: center;
     transition: all 0.4s ease;
 }
@@ -811,7 +863,7 @@ select#filtroEstado {
     transform: translateY(-10px);
     background: rgba(255, 255, 255, 0.08);
     border-color: rgba(255, 193, 7, 0.4);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
 }
 
 .team-info h5 {
@@ -834,6 +886,7 @@ select#filtroEstado {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -846,7 +899,8 @@ select#filtroEstado {
 }
 
 .glass-panel:hover img {
-    transform: scale(1.02); /* Zoom suave ao passar o rato */
+    transform: scale(1.02);
+    /* Zoom suave ao passar o rato */
 }
 
 /* Destaque para os ícones nos cards de valores */
@@ -870,4 +924,93 @@ select#filtroEstado {
     color: white !important;
 }
 
+/* GRELHA COMPACTA DE SERVIÇOS */
+.service-compact-card {
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    height: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
 
+.service-compact-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+}
+
+.service-img-mini {
+    height: 160px;
+    /* Tamanho reduzido como pediste */
+    background: #fdfdfd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.service-img-mini img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.service-title-box {
+    padding: 15px;
+    background: white;
+    text-align: center;
+    border-top: 1px solid #f0f0f0;
+}
+
+.service-title-box h6 {
+    color: #333;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.8px;
+}
+
+/* PAINEL DE DETALHE INDUSTRIAL */
+.industrial-detail-panel {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    border: none;
+}
+
+.detail-img-bg {
+    background: #f4f4f4;
+    /* Fundo neutro para o produto */
+}
+
+.main-product-img {
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.15));
+    transition: transform 0.5s;
+}
+
+.main-product-img:hover {
+    transform: scale(1.05);
+}
+
+.yellow-divider {
+    width: 60px;
+    height: 4px;
+    background: #f1c40f;
+    border-radius: 2px;
+}
+
+.quote-form-container {
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 15px;
+    border: 1px solid #eee;
+}
+
+.quote-form-container .form-control {
+    border: 1px solid #ddd;
+    padding: 10px 15px;
+}
+
+.quote-form-container .form-control:focus {
+    border-color: #f1c40f;
+    box-shadow: 0 0 0 0.2rem rgba(241, 196, 15, 0.15);
+}
