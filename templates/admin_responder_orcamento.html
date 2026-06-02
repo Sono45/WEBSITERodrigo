@@ -1,45 +1,93 @@
 {% extends "menu.html" %}
 {% block content %}
-<section class="py-5 mt-5">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="table-glass on-dark p-4 shadow-lg border-warning border-opacity-25"
-                    style="border: 1px solid rgba(255, 193, 7, 0.2);">
-                    <h3 class="text-white mb-4"><i class="bi bi-chat-left-dots-fill text-warning me-2"></i>Responder a:
-                        {{ p.nome }}</h3>
+<section class="py-4 mt-5">
+    <div class="container" style="max-width: 800px;">
 
-                    <div class="alert bg-dark border-warning border-opacity-50 text-white-50 mb-4">
-                        <small class="text-warning fw-bold text-uppercase">Pedido de Orçamento para:</small><br>
-                        <span class="text-white fw-bold">{{ p.servico_nome or "Serviço Geral" }}</span>
-                        <hr class="my-2 opacity-25">
-                        <p class="mb-0 italic small text-white">"{{ p.mensagem }}"</p>
-                    </div>
+        <div class="mb-3">
+            <a href="{{ url_for('admin_pedidos') }}" class="text-white-50 text-decoration-none small">
+                <i class="bi bi-arrow-left me-1"></i> Voltar aos Pedidos
+            </a>
+        </div>
 
-                    <form action="{{ url_for('responder_orcamento', id=p.id) }}" method="POST">
-                        <div class="mb-3">
-                            <label class="form-label text-warning small fw-bold text-uppercase">Valor Estimado
-                                (€):</label>
-                            <input type="number" name="valor" class="form-control bg-dark text-white border-secondary"
-                                style="max-width: 200px;" placeholder="Ex: 150">
-                        </div>
+        <div class="table-glass on-dark p-4 p-sm-5 shadow-lg">
 
-                        <div class="mb-3">
-                            <label class="form-label text-warning small fw-bold text-uppercase">A tua Proposta:</label>
-                            <textarea name="proposta" class="form-control bg-dark text-white border-secondary" rows="8"
-                                placeholder="Escreve aqui a resposta formal ao cliente..." required></textarea>
-                        </div>
-
-                        <div class="d-flex gap-2 pt-3">
-                            <button type="submit" class="btn btn-warning fw-bold px-4 text-dark shadow">
-                                <i class="bi bi-send-fill me-2"></i>ENVIAR PROPOSTA
-                            </button>
-                            <a href="{{ url_for('admin_pedidos') }}" class="btn btn-outline-light">CANCELAR</a>
-                        </div>
-                    </form>
+            <div class="d-flex align-items-center mb-4 border-bottom border-secondary border-opacity-25 pb-3">
+                <i class="bi bi-reply-all-fill text-warning fs-2 me-3"></i>
+                <div>
+                    <h3 class="text-white fw-bold m-0" style="font-size: 1.4rem;">Responder a: {{ p['nome'] }}</h3>
+                    <span class="text-white-50 small">{{ p['email'] }}</span>
                 </div>
             </div>
+
+            <div class="bg-dark bg-opacity-50 border border-secondary border-opacity-50 rounded-3 p-3 mb-4 text-start">
+                <span class="text-warning small fw-bold d-block mb-1" style="letter-spacing: 0.5px;">PEDIDO DE ORÇAMENTO
+                    PARA:</span>
+                <h5 class="text-white fw-bold mb-2">{{ p['servico_nome'] or 'Consulta Geral' }}</h5>
+                <div class="text-white-50 small p-2 bg-black bg-opacity-20 rounded"
+                    style="font-style: italic; border-left: 3px solid rgba(255,193,7,0.3);">
+                    "{{ p['mensagem'] }}"
+                </div>
+            </div>
+
+            <form action="{{ url_for('responder_orcamento', id=p['id']) }}" method="POST">
+
+                <div class="mb-4 text-start">
+                    <label for="valor" class="form-label text-warning small fw-bold"
+                        style="letter-spacing: 0.5px;">VALOR ESTIMADO (€):</label>
+                    <div class="input-group" style="max-width: 250px;">
+                        <input type="number" step="0.01" name="valor" id="valor"
+                            class="form-control bg-dark text-white border-secondary rounded-start"
+                            placeholder="Ex: 1250.00">
+                        <span class="input-group-text bg-secondary bg-opacity-25 border-secondary text-white">€</span>
+                    </div>
+                    <small class="text-white-50 d-block mt-1" style="font-size: 0.75rem;">Deixa em vazio se preferires
+                        não apresentar valor direto no e-mail.</small>
+                </div>
+
+                <div class="mb-4 text-start">
+                    <label for="proposta" class="form-label text-warning small fw-bold" style="letter-spacing: 0.5px;">A
+                        TUA PROPOSTA / MENSAGEM:</label>
+                    <textarea name="proposta" id="proposta"
+                        class="form-control bg-dark text-white border-secondary rounded-3" rows="8"
+                        placeholder="Escreve aqui os detalhes da proposta técnica, prazos de entrega ou especificações..."
+                        required>Estimado(a) {{ p['nome'] }},
+
+Agradecemos o seu contacto. Relativamente ao seu pedido para o equipamento {{ p['servico_nome'] or 'solicitado' }}, apresentamos a nossa melhor proposta...
+
+Ficamos ao dispor,</textarea>
+                </div>
+
+                <div class="d-flex gap-3 justify-content-end border-top border-secondary border-opacity-25 pt-3">
+                    <a href="{{ url_for('admin_pedidos') }}" class="btn btn-outline-secondary px-4 fw-bold">Cancelar</a>
+                    <button type="submit"
+                        class="btn btn-warning text-dark px-5 fw-bold shadow-sm rounded-3 btn-enviar-proposta">
+                        <i class="bi bi-send-fill me-2"></i>Enviar Proposta
+                    </button>
+                </div>
+            </form>
+
         </div>
     </div>
 </section>
+
+<style>
+    /* Estilos locais para polir o formulário */
+    .form-control:focus {
+        background-color: rgba(0, 0, 0, 0.6) !important;
+        border-color: #ffc107 !important;
+        box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.15) !important;
+        color: #ffffff !important;
+    }
+
+    .btn-enviar-proposta {
+        background-color: #ffc107 !important;
+        border: none !important;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .btn-enviar-proposta:hover {
+        background-color: #e0a800 !important;
+        transform: translateY(-1px);
+    }
+</style>
 {% endblock %}

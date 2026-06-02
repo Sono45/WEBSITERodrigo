@@ -96,26 +96,34 @@
             <div class="glass-container p-4">
                 <h5 class="text-warning fw-bold mb-4 text-uppercase small" style="letter-spacing: 1px;">Gestão Direta
                 </h5>
-                <div class="row g-3">
-                    <div class="col-md-3 col-6">
+                <div class="row g-3 justify-content-center">
+                    <div class="col-xl-2 col-md-4 col-6">
                         <a href="{{ url_for('admin_pedidos') }}" class="quick-link-btn">
                             <i class="bi bi-clipboard-data fs-2 text-warning mb-2"></i>
                             <span>Gerir Pedidos</span>
                         </a>
                     </div>
-                    <div class="col-md-3 col-6">
+                    <div class="col-xl-2 col-md-4 col-6">
                         <a href="{{ url_for('admin_servicos') }}" class="quick-link-btn">
                             <i class="bi bi-pencil-square fs-2 text-info mb-2"></i>
                             <span>Editar Serviços</span>
                         </a>
                     </div>
-                    <div class="col-md-3 col-6">
+                    <div class="col-xl-2 col-md-4 col-6">
                         <a href="{{ url_for('admin_equipa') }}" class="quick-link-btn">
                             <i class="bi bi-person-plus fs-2 text-success mb-2"></i>
                             <span>Gerir Equipa</span>
                         </a>
                     </div>
-                    <div class="col-md-3 col-6">
+
+                    <div class="col-xl-2 col-md-4 col-6">
+                        <a href="{{ url_for('admin_contactos') }}" class="quick-link-btn">
+                            <i class="bi bi-envelope-paper fs-2 text-primary mb-2"></i>
+                            <span>Gerir Contactos</span>
+                        </a>
+                    </div>
+
+                    <div class="col-xl-2 col-md-4 col-6">
                         <a href="{{ url_for('admin_logs') }}" class="quick-link-btn">
                             <i class="bi bi-shield-lock fs-2 text-light mb-2"></i>
                             <span>Auditoria/Logs</span>
@@ -136,9 +144,8 @@
             labels: ['Pendentes', 'Tratados'],
             datasets: [{
                 data: [{{ pendentes }}, {{ tratados }}],
-        // Vermelho para Pendentes, Verde para Tratados
         backgroundColor: ['#dc3545', '#198754'],
-        borderColor: 'rgba(26, 26, 26, 1)', // Borda escura para combinar com o fundo
+        borderColor: 'rgba(26, 26, 26, 1)',
         borderWidth: 6,
         hoverOffset: 15
     }]
@@ -146,7 +153,7 @@
         options: {
         responsive: true,
         maintainAspectRatio: false,
-        cutout: '80%', // Faz o buraco do meio maior (efeito anel)
+        cutout: '80%',
         plugins: {
             legend: {
                 display: true,
@@ -221,13 +228,16 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 25px;
+        padding: 25px 10px;
+        /* Reduzido o padding lateral para acomodar as 5 colunas sem quebrar o texto */
         border-radius: 15px;
         text-decoration: none;
         color: white;
         background: rgba(255, 255, 255, 0.05);
         border: 1px solid rgba(255, 255, 255, 0.1);
         transition: 0.3s;
+        height: 100%;
+        justify-content: center;
     }
 
     .quick-link-btn:hover {

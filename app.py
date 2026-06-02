@@ -7,28 +7,45 @@ import pandas as pd
 from uuid import uuid4
 from werkzeug.utils import secure_filename
 from flask import send_file
-#import openpyxl
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from functools import wraps
 
-# Configurações do teu email (Exemplo Gmail)
+# Configurações do teu email
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 EMAIL_USER = "visreciteste@gmail.com"
 EMAIL_PASS = "cugr blil vges lvxh"
 
-def enviar_email(destinatario, assunto, corpo):
+from email.mime.image import MIMEImage
+
+def enviar_email(destinatario, assunto, corpo, imagem_embed=None):
     try:
-        msg = MIMEMultipart()
+        # Usamos 'related' para permitir que imagens embutidas (inline) funcionem corretamente
+        msg = MIMEMultipart('related')
         msg['From'] = EMAIL_USER
         msg['To'] = destinatario
         msg['Subject'] = assunto
-        msg.attach(MIMEText(corpo, 'html'))
+
+        # Criamos a parte alternativa para o corpo do texto em HTML
+        msg_alternative = MIMEMultipart('alternative')
+        msg.attach(msg_alternative)
+        msg_alternative.attach(MIMEText(corpo, 'html'))
+
+        # Se for passado um caminho de imagem e o ficheiro existir no disco
+        if imagem_embed and os.path.exists(imagem_embed):
+            with open(imagem_embed, 'rb') as f:
+                img_data = f.read()
+            img = MIMEImage(img_data)
+            
+            # Definimos o Content-ID que vai ser chamado no HTML através de src="cid:logo_visreci"
+            img.add_header('Content-ID', '<logo_visreci>')
+            img.add_header('Content-Disposition', 'inline', filename=os.path.basename(imagem_embed))
+            msg.attach(img)
 
         server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
-        server.starttls() # Segurança
+        server.starttls()
         server.login(EMAIL_USER, EMAIL_PASS)
         server.sendmail(EMAIL_USER, destinatario, msg.as_string())
         server.quit()
@@ -40,9 +57,7 @@ def enviar_email(destinatario, assunto, corpo):
 app = Flask(__name__, static_folder=".", static_url_path="")
 app.secret_key = "altera-esta-secret-key"
 
-# --- CONFIGURAÇÕES DE UPLOADS ---
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
-
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -56,16 +71,12 @@ def save_upload(file_storage, subfolder):
     file_storage.save(disk_path)
     return f"/uploads/{subfolder}/{new_name}"
 
-# --- BASE DE DADOS E LOGS ---
-
 def get_connection():
-    # Adicionamos o timeout de 20 ou 30 segundos
     conn = sqlite3.connect("app.db", timeout=30) 
     conn.row_factory = sqlite3.Row
     return conn
 
 def log_action(action, entity, entity_id=None, details=None):
-    """Regista uma ação na tabela de logs"""
     try:
         conn = get_connection()
         conn.execute("""
@@ -81,7 +92,6 @@ def init_db():
     conn = get_connection()
     cursor = conn.cursor()
     
-    # Criar Tabela de Logs (Garante todas as colunas necessárias)
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS logs (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -95,7 +105,6 @@ def init_db():
         )
     """)
 
-    # Criar Tabela de Trabalhadores
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS trabalhadores (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -106,7 +115,6 @@ def init_db():
         )
     """)
 
-    # Criar Tabela de Serviços
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS servicos (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -117,7 +125,6 @@ def init_db():
         )
     """)
 
-    # Criar Tabela de Equipa
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS equipa (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -129,34 +136,19 @@ def init_db():
         )
     """)
 
-    # Criar Tabela de Pedidos
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS pedidos_orcamento (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nome TEXT,
             email TEXT,
+            telefone TEXT,
             mensagem TEXT,
             servico_id INTEGER,
             tratado INTEGER DEFAULT 0,
             created_at DATETIME DEFAULT (datetime('now', 'localtime'))
         )
-        
     """)
 
-    # Tabela de Reclamações
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS reclamacoes (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nome TEXT NOT NULL,
-            email TEXT NOT NULL,
-            assunto TEXT,
-            mensagem TEXT NOT NULL,
-            estado TEXT DEFAULT 'Pendente',
-            created_at DATETIME DEFAULT (datetime('now', 'localtime'))
-        )
-    """)
-
-    # Criar utilizadores iniciais se a tabela estiver vazia
     cursor.execute("SELECT COUNT(*) FROM trabalhadores")
     if cursor.fetchone()[0] == 0:
         utilizadores = [
@@ -171,13 +163,6 @@ def init_db():
 
     conn.commit()
     conn.close()
-
-# def login_required(view_func):
-#     def wrapper(*args, **kwargs):
-#         if "user_id" not in session: return redirect(url_for("login"))
-#         return view_func(*args, **kwargs)
-#     wrapper.__name__ = view_func.__name__
-#     return wrapper
 
 def login_required(view_func):
     @wraps(view_func)
@@ -222,6 +207,8 @@ def equipa():
     conn.close()
     return render_template("equipa.html", equipa=equipa_lista)
 
+import base64
+
 @app.route("/contactos", methods=["GET", "POST"])
 def contactos():
     if request.method == "POST":
@@ -230,22 +217,64 @@ def contactos():
         assunto = request.form.get("assunto")
         mensagem = request.form.get("mensagem")
 
-        # 1. Guarda na Base de Dados (Opcional, mas recomendado)
+        # Grava o contacto na base de dados local
         conn = get_connection()
         conn.execute("INSERT INTO contactos (nome, email, assunto, mensagem) VALUES (?, ?, ?, ?)",
                      (nome, email, assunto, mensagem))
         conn.commit()
         conn.close()
 
-        # 2. Envia o Email Automático (Igual ao que tens nas reclamações)
-        corpo = f"<h2>Novo Contacto de {nome}</h2><p>Assunto: {assunto}</p><p>Mensagem: {mensagem}</p>"
-        enviar_email(EMAIL_USER, f"CONTACTO: {assunto}", corpo)
+        # 1. E-MAIL QUE TU (ADMINISTRADOR) RECEBES
+        corpo_admin = f"<h2>Novo Contacto de {nome}</h2><p>Assunto: {assunto}</p><p>Mensagem: {mensagem}</p>"
+        enviar_email(EMAIL_USER, f"CONTACTO: {assunto}", corpo_admin)
+
+        # 2. CONVERSÃO DO LOGO PARA BASE64 (Garante que a imagem carrega sempre)
+        img_base64 = ""
+        caminho_real_logo = os.path.join(app.root_path, "static", "IMG", "LogoLetra.png")
+        try:
+            with open(caminho_real_logo, "rb") as image_file:
+                img_base64 = base64.b64encode(image_file.read()).decode('utf-8')
+        except Exception as e:
+            print(f"Erro ao ler imagem nos contactos para Base64: {e}")
+
+        if img_base64:
+            tag_logo = f'<img src="data:image/png;base64,{img_base64}" alt="VISRECI" style="max-height: 45px; width: auto; display: inline-block; margin-bottom: 8px;">'
+        else:
+            tag_logo = '<h1 style="color: #ffffff; margin: 0; font-size: 1.6rem; font-weight: 700; letter-spacing: 1px;">VISRECI</h1>'
+
+        # 3. NOVO E-MAIL AUTOMÁTICO DE CONFIRMAÇÃO PARA O CLIENTE
+        corpo_cliente = f"""
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+            <div style="background-color: #1a1a1a; padding: 25px 30px; text-align: center; border-bottom: 4px solid #ffc107;">
+                {tag_logo}
+                <p style="color: #ffc107; margin: 0; font-size: 0.85rem; text-transform: uppercase; font-weight: 600; letter-spacing: 2px;">Reciclagem e Equipamentos Industriais</p>
+            </div>
+            
+            <div style="padding: 35px 25px; background-color: #ffffff; color: #333333; line-height: 1.6;">
+                <h2 style="color: #1a1a1a; font-size: 1.3rem; margin-top: 0; margin-bottom: 15px;">Olá {nome},</h2>
+                <p style="font-size: 1rem; margin-bottom: 25px;">Agradecemos o seu contacto através da nossa plataforma. Confirmamos que recebemos a sua mensagem com sucesso.</p>
+                
+                <div style="background-color: #f9f9f9; border-left: 4px solid #ffc107; padding: 20px; border-radius: 0 8px 8px 0; margin-bottom: 30px;">
+                    <h4 style="margin: 0 0 5px 0; color: #777777; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">Assunto do seu contacto:</h4>
+                    <p style="margin: 0; color: #1a1a1a; font-size: 1.1rem; font-weight: 700;">{assunto}</p>
+                </div>
+                
+                <p style="font-size: 0.95rem; margin-bottom: 0;">A nossa equipa comercial vai analisar a sua solicitação e entraremos em contacto consigo o mais brevemente possível.</p>
+            </div>
+            
+            <div style="background-color: #f4f4f4; padding: 20px; text-align: center; border-top: 1px solid #eeeeee; font-size: 0.8rem; color: #777777;">
+                <p style="margin: 0 0 5px 0; font-weight: 600; color: #444444;">VISRECI, Lda.</p>
+                <p style="margin: 0;">Mensagem automática de confirmação de receção. Por favor, não responda a este e-mail.</p>
+            </div>
+        </div>
+        """
+        # Envia a resposta automática ao e-mail de quem preencheu o formulário
+        enviar_email(email, "Visreci - Recebemos a sua mensagem", corpo_cliente)
 
         flash("Mensagem enviada com sucesso!", "success")
-        return redirect(url_for("contactos")) # Volta para a página de contacto
+        return redirect(url_for("contactos"))
         
     return render_template("contactos.html")
-
 
 @app.route("/admin/contactos")
 @login_required
@@ -283,19 +312,14 @@ def logout():
 @login_required
 def dashboard():
     conn = get_connection()
-    
-    # Contagens de Recursos
     total_servicos = conn.execute("SELECT COUNT(*) FROM servicos").fetchone()[0]
     total_trabalhadores = conn.execute("SELECT COUNT(*) FROM trabalhadores").fetchone()[0]
     total_equipa = conn.execute("SELECT COUNT(*) FROM equipa").fetchone()[0]
     
-    # Gestão de Orçamentos (Substitui a lógica de queixas)
     pendentes = conn.execute("SELECT COUNT(*) FROM pedidos_orcamento WHERE tratado = 0").fetchone()[0]
-    tratados = conn.execute("SELECT COUNT(*) FROM pedidos_orcamento WHERE tratado = 1").fetchone()[0]
-    total_pedidos = pendentes + tratados
+    dp_tratados = conn.execute("SELECT COUNT(*) FROM pedidos_orcamento WHERE tratado = 1").fetchone()[0]
+    total_pedidos = pendentes + dp_tratados
 
-    # --- LÓGICA DO GRÁFICO (Agora focado em Pedidos de Orçamento) ---
-    # Vamos buscar o volume de pedidos dos últimos meses para o gráfico
     stats_query = """
         SELECT strftime('%m', created_at) as mes, COUNT(*) as total 
         FROM pedidos_orcamento 
@@ -304,13 +328,10 @@ def dashboard():
         LIMIT 6
     """
     stats_rows = conn.execute(stats_query).fetchall()
-    
     meses_nomes = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"]
     
-    # Se não houver dados, enviamos listas vazias para não dar erro
     labels_grafico = [meses_nomes[int(r['mes'])-1] for r in stats_rows] if stats_rows else ["Sem dados"]
     dados_grafico = [r['total'] for r in stats_rows] if stats_rows else [0]
-    
     conn.close()
     
     return render_template("dashboard.html", 
@@ -319,18 +340,27 @@ def dashboard():
                         total_trabalhadores=total_trabalhadores,
                         total_equipa=total_equipa,
                         pendentes=pendentes,
-                        tratados=tratados,
+                        tratados=dp_tratados,
                         total_pedidos=total_pedidos,
                         labels_grafico=labels_grafico,
                         dados_grafico=dados_grafico)
 
+# --- GESTÃO COM PAGINAÇÃO ---
+
 @app.route("/admin/servicos")
 @login_required
 def admin_servicos():
+    page = request.args.get('page', 1, type=int)
+    per_page = 5
+    offset = (page - 1) * per_page
+
     conn = get_connection()
-    servicos = conn.execute("SELECT * FROM servicos ORDER BY id ASC").fetchall()
+    servicos = conn.execute("SELECT * FROM servicos ORDER BY id ASC LIMIT ? OFFSET ?", (per_page, offset)).fetchall()
+    total = conn.execute("SELECT COUNT(*) FROM servicos").fetchone()[0]
     conn.close()
-    return render_template("admin_servicos.html", servicos=servicos)
+
+    total_pages = max(1, math.ceil(total / per_page))
+    return render_template("admin_servicos.html", servicos=servicos, page=page, total_pages=total_pages)
 
 @app.route("/admin/servicos/novo", methods=["GET", "POST"])
 @login_required
@@ -377,28 +407,33 @@ def admin_servico_remover(servico_id):
     flash("Serviço removido.", "success")
     return redirect(url_for("admin_servicos"))
 
-# --- GESTÃO DE EQUIPA ---
-
 @app.route("/admin/equipa")
 @login_required
 def admin_equipa():
+    page = request.args.get('page', 1, type=int)
+    per_page = 5
+    offset = (page - 1) * per_page
+
     conn = get_connection()
-    membros = conn.execute("SELECT * FROM equipa ORDER BY id ASC").fetchall()
+    membros = conn.execute("SELECT * FROM equipa ORDER BY id ASC LIMIT ? OFFSET ?", (per_page, offset)).fetchall()
+    total = conn.execute("SELECT COUNT(*) FROM equipa").fetchone()[0]
     conn.close()
-    return render_template("admin_equipa.html", membros=membros)
+
+    total_pages = max(1, math.ceil(total / per_page))
+    return render_template("admin_equipa.html", membros=membros, page=page, total_pages=total_pages)
 
 @app.route("/admin/equipa/novo", methods=["GET", "POST"])
 @login_required
 def admin_equipa_novo():
     if request.method == "POST":
-        nome, cargo, desc = request.form.get("nome"), request.form.get("cargo"), request.form.get("descricao")
+        name, cargo, desc = request.form.get("nome"), request.form.get("cargo"), request.form.get("descricao")
         foto = save_upload(request.files.get("foto"), "equipa")
         conn = get_connection()
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO equipa (nome, cargo, descricao, foto, ativo) VALUES (?, ?, ?, ?, 1)", (nome, cargo, desc, foto))
+        cursor.execute("INSERT INTO equipa (nome, cargo, descricao, foto, ativo) VALUES (?, ?, ?, ?, 1)", (name, cargo, desc, foto))
         conn.commit()
         new_id = cursor.lastrowid
-        log_action("CREATE", "EQUIPA", new_id, f"Adicionou {nome}")
+        log_action("CREATE", "EQUIPA", new_id, f"Adicionou {name}")
         conn.close()
         flash("Membro adicionado!", "success")
         return redirect(url_for("admin_equipa"))
@@ -410,26 +445,26 @@ def admin_equipa_editar(membro_id):
     conn = get_connection()
     membro = conn.execute("SELECT * FROM equipa WHERE id = ?", (membro_id,)).fetchone()
     if request.method == "POST":
-        nome = request.form.get("nome")
+        name = request.form.get("nome")
         cargo = request.form.get("cargo")
         desc = request.form.get("descricao")
         ativo = 1 if request.form.get("ativo") == "1" else 0
         
-        # Lógica para a foto na edição
         nova_foto = request.files.get("foto")
         if nova_foto and nova_foto.filename != '':
             foto_nome = save_upload(nova_foto, "equipa")
             conn.execute("UPDATE equipa SET nome=?, cargo=?, descricao=?, foto=?, ativo=? WHERE id=?", 
-                        (nome, cargo, desc, foto_nome, ativo, membro_id))
+                        (name, cargo, desc, foto_nome, ativo, membro_id))
         else:
             conn.execute("UPDATE equipa SET nome=?, cargo=?, descricao=?, ativo=? WHERE id=?", 
-            (nome, cargo, desc, ativo, membro_id))
+                        (name, cargo, desc, ativo, membro_id))
         conn.commit()
         conn.close()
         flash("Membro atualizado!", "success")
         return redirect(url_for("admin_equipa"))
     conn.close()
     return render_template("admin_equipa_form.html", membro=membro)
+
 @app.route("/admin/equipa/<int:membro_id>/toggle", methods=["POST"])
 @login_required
 def admin_equipa_toggle(membro_id):
@@ -439,8 +474,6 @@ def admin_equipa_toggle(membro_id):
     log_action("UPDATE", "EQUIPA", membro_id, "Alterou estado Ativo/Inativo")
     conn.close()
     return redirect(url_for("admin_equipa"))
-
-# --- LOGS COM PAGINAÇÃO ---
 
 @app.route("/admin/logs")
 @login_required
@@ -466,7 +499,7 @@ def admin_logs():
     conn.close()
     return render_template("admin_logs.html", logs=logs, page=page, total_pages=total_pages, q=q, action=act_f, entity=ent_f, actions=actions, entities=entities)
 
-# --- PEDIDOS DE ORÇAMENTO ---
+import base64
 
 @app.route("/pedir_orcamento", methods=["POST"])
 def pedir_orcamento():
@@ -478,11 +511,10 @@ def pedir_orcamento():
 
     conn = get_connection()
     cursor = conn.cursor()
-    
-    new_id = "0" # ID temporário caso a BD falhe
+    new_id = "0"
 
+    # --- CORREÇÃO DA GRAVAÇÃO NA BASE DE DADOS (mensagem em vez de message) ---
     try:
-        # Tenta inserir com o telefone
         cursor.execute("""
             INSERT INTO pedidos_orcamento (nome, email, telefone, servico_id, mensagem, tratado) 
             VALUES (?, ?, ?, ?, ?, 0)
@@ -490,8 +522,7 @@ def pedir_orcamento():
         conn.commit()
         new_id = cursor.lastrowid
     except Exception as e:
-        print(f"Aviso: Erro ao gravar na BD (provavelmente falta a coluna telefone): {e}")
-        # Se falhar, tenta inserir SEM o telefone para não dar erro ao utilizador
+        print(f"Erro na primeira tentativa de gravação: {e}")
         try:
             cursor.execute("""
                 INSERT INTO pedidos_orcamento (nome, email, servico_id, mensagem, tratado) 
@@ -499,31 +530,63 @@ def pedir_orcamento():
             """, (nome, email, servico_id, mensagem))
             conn.commit()
             new_id = cursor.lastrowid
-        except:
-            pass # Se falhar tudo, avançamos para o email para não perder o contacto
+        except Exception as e2:
+            print(f"Erro crítico ao gravar orçamento: {e2}")
 
-    # Buscar o nome do serviço para o email
     try:
-        # Tenta procurar por 'nome'.
-        res = conn.execute("SELECT nome FROM servicos WHERE id = ?", (servico_id,)).fetchone()
+        res = conn.execute("SELECT titulo FROM servicos WHERE id = ?", (servico_id,)).fetchone()
         servico_nome = res[0] if res else "Serviço Geral"
     except:
-        try:
-            # Se a coluna não for 'nome', tenta por 'titulo'
-            res = conn.execute("SELECT titulo FROM servicos WHERE id = ?", (servico_id,)).fetchone()
-            servico_nome = res[0] if res else "Serviço Geral"
-        except:
-            # Se falhar tudo, define um nome padrão
-            servico_nome = "Serviço ID: " + str(servico_id)
+        servico_nome = "Serviço ID: " + str(servico_id)
 
-    # Fechar a conexão antes de enviar o email
     conn.close()
 
-    # --- ENVIO DE EMAILS (Mesmo que a BD falhe, o email vai!) ---
+    # --- 1. Email do Administrador ---
     corpo_admin = f"<h2>Novo Orçamento</h2><p><b>Nome:</b> {nome}<br><b>Tel:</b> {telefone}<br><b>Email:</b> {email}<br><b>Serviço:</b> {servico_nome}</p><p><b>Mensagem:</b> {mensagem}</p>"
     enviar_email(EMAIL_USER, f"ORÇAMENTO #{new_id} - {nome}", corpo_admin)
 
-    corpo_cliente = f"<h2>Olá {nome}</h2><p>Recebemos o seu pedido para {servico_nome}. Entraremos em contacto brevemente.</p>"
+    # --- 2. CONVERSÃO DO LOGO PARA BASE64 ---
+    img_base64 = ""
+    caminho_real_logo = os.path.join(app.root_path, "static", "IMG", "LogoLetra.png")
+    
+    try:
+        with open(caminho_real_logo, "rb") as image_file:
+            img_base64 = base64.b64encode(image_file.read()).decode('utf-8')
+    except Exception as e:
+        print(f"Erro ao verificar imagem para Base64: {e}")
+
+    if img_base64:
+        tag_logo = f'<img src="data:image/png;base64,{img_base64}" alt="VISRECI" style="max-height: 45px; width: auto; display: inline-block; margin-bottom: 8px;">'
+    else:
+        tag_logo = '<h1 style="color: #ffffff; margin: 0; font-size: 1.6rem; font-weight: 700; letter-spacing: 1px;">VISRECI</h1>'
+
+    # --- 3. EMAIL CORPORATIVO DO CLIENTE ---
+    corpo_cliente = f"""
+    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+        <div style="background-color: #1a1a1a; padding: 25px 30px; text-align: center; border-bottom: 4px solid #ffc107;">
+            {tag_logo}
+            <p style="color: #ffc107; margin: 0; font-size: 0.85rem; text-transform: uppercase; font-weight: 600; letter-spacing: 2px;">Reciclagem e Equipamentos Industriais</p>
+        </div>
+        
+        <div style="padding: 35px 25px; background-color: #ffffff; color: #333333; line-height: 1.6;">
+            <h2 style="color: #1a1a1a; font-size: 1.3rem; margin-top: 0; margin-bottom: 15px;">Olá {nome},</h2>
+            <p style="font-size: 1rem; margin-bottom: 25px;">Confirmamos que recebemos com sucesso o seu pedido de orçamento. A nossa equipa técnica já está a analisar as especificações fornecidas.</p>
+            
+            <div style="background-color: #f9f9f9; border-left: 4px solid #ffc107; padding: 20px; border-radius: 0 8px 8px 0; margin-bottom: 30px;">
+                <h4 style="margin: 0 0 5px 0; color: #777777; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">Equipamento / Serviço Selecionado:</h4>
+                <p style="margin: 0; color: #1a1a1a; font-size: 1.1rem; font-weight: 700;">{servico_nome}</p>
+            </div>
+            
+            <p style="font-size: 0.95rem; margin-bottom: 0;">Entraremos em contacto consigo muito brevemente com uma proposta detalhada ou para esclarecer eventuais detalhes técnicos.</p>
+        </div>
+        
+        <div style="background-color: #f4f4f4; padding: 20px; text-align: center; border-top: 1px solid #eeeeee; font-size: 0.8rem; color: #777777;">
+            <p style="margin: 0 0 5px 0; font-weight: 600; color: #444444;">VISRECI, Lda.</p>
+            <p style="margin: 0;">Mensagem automática de confirmação de receção. Por favor, não responda a este e-mail.</p>
+        </div>
+    </div>
+    """
+    
     enviar_email(email, "Visreci - Recebemos o seu pedido", corpo_cliente)
 
     flash("Pedido enviado com sucesso!", "success")
@@ -533,13 +596,28 @@ def pedir_orcamento():
 @login_required
 def admin_pedidos():
     estado = request.args.get('estado')
+    page = request.args.get('page', 1, type=int)
+    per_page = 10
+    offset = (page - 1) * per_page
+
     conn = get_connection()
-    query = "SELECT p.*, s.titulo AS servico_nome FROM pedidos_orcamento p LEFT JOIN servicos s ON p.servico_id = s.id"
+    count_query = "SELECT COUNT(*) FROM pedidos_orcamento"
+    data_query = "SELECT p.*, s.titulo AS servico_nome FROM pedidos_orcamento p LEFT JOIN servicos s ON p.servico_id = s.id"
+    
     params = []
-    if estado in ['0', '1']: query += " WHERE p.tratado = ?"; params.append(estado)
-    pedidos = conn.execute(query + " ORDER BY p.id DESC", params).fetchall()
+    if estado in ['0', '1']:
+        count_query += " WHERE tratado = ?"
+        data_query += " WHERE p.tratado = ?"
+        params.append(estado)
+        
+    total = conn.execute(count_query, params).fetchone()[0]
+    total_pages = max(1, math.ceil(total / per_page))
+    
+    data_query += " ORDER BY p.id DESC LIMIT ? OFFSET ?"
+    pedidos = conn.execute(data_query, params + [per_page, offset]).fetchall()
     conn.close()
-    return render_template("admin_pedidos.html", pedidos=pedidos, filtro_atual=estado)
+    
+    return render_template("admin_pedidos.html", pedidos=pedidos, filtro_atual=estado, page=page, total_pages=total_pages)
 
 @app.route("/admin/pedidos/<int:pedido_id>/tratar")
 @login_required
@@ -572,8 +650,6 @@ def stats_servicos_por_dia():
     conn.close()
     return jsonify({"labels": [r["dia"] for r in rows], "data": [r["total"] for r in rows]})
 
-
-# Dicionário de interface - Podes adicionar aqui todas as palavras fixas do site
 TRANSLATIONS = {
     'pt': {
         'inicio': 'Início', 'sobre': 'Sobre', 'servicos': 'Serviços', 
@@ -591,149 +667,34 @@ TRANSLATIONS = {
 
 @app.context_processor
 def inject_translations():
-    # Se não houver língua na sessão, o padrão é 'pt'
     lang = session.get('lang', 'pt')
-    return {
-        'lang': lang,
-        't': TRANSLATIONS.get(lang, TRANSLATIONS['pt'])
-    }
+    return { 'lang': lang, 't': TRANSLATIONS.get(lang, TRANSLATIONS['pt']) }
 
 @app.route("/admin/logs/limpar", methods=["POST"])
 def admin_logs_limpar():
-    if "user_id" not in session: 
-        return redirect(url_for("login"))
-    
+    if "user_id" not in session: return redirect(url_for("login"))
     try:
         conn = get_connection()
         conn.execute("DELETE FROM logs")
         conn.commit()
         conn.close()
-        
-        # Criamos um log novo para dizer que foi limpo
         log_action("DELETE", "SISTEMA", details="O histórico de logs foi limpo.")
-        
         flash("Histórico de logs removido com sucesso!", "success")
     except Exception as e:
         flash(f"Erro ao limpar: {e}", "error")
-        
     return redirect(url_for("admin_logs"))
-
-@app.route("/reclamar", methods=["GET", "POST"])
-def reclamar():
-    if request.method == "POST":
-        nome = request.form.get("nome")
-        email = request.form.get("email")
-        assunto = request.form.get("assunto")
-        mensagem = request.form.get("mensagem")
-        
-        conn = get_connection()
-        cursor = conn.cursor()
-        cursor.execute("INSERT INTO reclamacoes (nome, email, assunto, mensagem) VALUES (?, ?, ?, ?)",
-        (nome, email, assunto, mensagem))
-        new_id = cursor.lastrowid
-        conn.commit()
-        conn.close()
-        
-        # REGISTAR NAS LOGS
-        log_action("CREATE", "RECLAMACAO", new_id, f"Nova reclamação de: {email} sobre: {assunto}")
-
-        # --- ENVIO DE EMAILS AUTOMÁTICOS ---
-        
-        # 1. Email para o ADMINISTRADOR (Alerta de nova queixa)
-        corpo_admin = f"""
-        <div style="font-family: Arial, sans-serif; border: 1px solid #ffc107; padding: 20px; border-radius: 10px;">
-            <h2 style="color: #ffc107;">⚠️ Nova Reclamação Recebida - Visreci</h2>
-            <p><b>ID da Reclamação:</b> #{new_id}</p>
-            <p><b>Cliente:</b> {nome}</p>
-            <p><b>Email:</b> {email}</p>
-            <p><b>Assunto:</b> {assunto}</p>
-            <p><b>Mensagem:</b></p>
-            <blockquote style="background: #f9f9f9; padding: 10px; border-left: 5px solid #ccc;">{mensagem}</blockquote>
-            <hr>
-            <p>Acede ao Painel de Gestão para responder a este cliente.</p>
-        </div>
-        """
-        enviar_email(EMAIL_USER, f"ALERTA: Nova Reclamação #{new_id}", corpo_admin)
-
-        # 2. Email para o CLIENTE (Confirmação de receção)
-        corpo_cliente = f"""
-        <div style="font-family: Arial, sans-serif; padding: 20px;">
-            <h2 style="color: #198754;">Recebemos a sua mensagem, {nome}!</h2>
-            <p>Confirmamos que a sua reclamação sobre <b>"{assunto}"</b> foi registada com sucesso no nosso sistema sob o número <b>#{new_id}</b>.</p>
-            <p>A equipa técnica da <b>Visreci</b> irá analisar o seu caso com a maior brevidade possível.</p>
-            <br>
-            <p>Obrigado pela sua paciência.</p>
-            <p><i>Atentamente,</i><br><b>Equipa de Suporte Visreci</b></p>
-        </div>
-        """
-        enviar_email(email, f"Visreci - Confirmação de Reclamação #{new_id}", corpo_cliente)
-
-        flash("Reclamação enviada. Verifique o seu email para a confirmação.", "success")
-        return redirect(url_for("index"))
-    
-    return render_template("reclamar.html")
 
 @app.route("/aceitar-cookies")
 def aceitar_cookies():
-    # Redireciona para a página anterior ou para a home
     res = make_response(redirect(request.referrer or url_for('index')))
-    # Define a cookie 'cookies_aceites' como 'true' por 30 dias
     res.set_cookie('cookies_aceites', 'true', max_age=60*60*24*30)
     return res
-
-@app.route("/admin/reclamacoes/<int:id>/responder_cliente", methods=["GET", "POST"])
-@login_required
-def responder_reclamacao(id):
-    conn = get_connection()
-    reclamacao = conn.execute("SELECT * FROM reclamacoes WHERE id = ?", (id,)).fetchone()
-    
-    if request.method == "POST":
-        mensagem_resposta = request.form.get("resposta")
-        email_cliente = reclamacao['email']
-        nome_cliente = reclamacao['nome']
-        assunto_original = reclamacao['assunto']
-
-        # 1. Enviar o Email de Resposta
-        corpo_email = f"""
-        <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ffc107; border-radius: 10px;">
-            <h2 style="color: #ffc107;">Resposta à sua Reclamação - Visreci</h2>
-            <p>Olá <b>{nome_cliente}</b>,</p>
-            <p>Em seguimento à sua mensagem sobre "<b>{assunto_original}</b>", a nossa equipa tem a seguinte resposta:</p>
-            <div style="background: #f4f4f4; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                {mensagem_resposta}
-            </div>
-            <p>Esperamos ter esclarecido a sua questão. Estamos à disposição para qualquer dúvida adicional.</p>
-            <hr>
-            <p style="font-size: 0.8rem; color: #777;">Este é um email automático, por favor não responda diretamente.</p>
-        </div>
-        """
-        
-        if enviar_email(email_cliente, f"RE: {assunto_original} - Visreci", corpo_email):
-            # 2. Atualizar o estado na Base de Dados para 'Resolvida'
-            conn.execute("UPDATE reclamacoes SET estado = 'Resolvida' WHERE id = ?", (id,))
-            conn.commit()
-            
-            log_action("UPDATE", "RECLAMACAO", id, f"Resposta enviada para {email_cliente}")
-            flash("Resposta enviada com sucesso e reclamação encerrada!", "success")
-        else:
-            flash("Erro ao enviar o email. Verifique as configurações.", "danger")
-            
-        conn.close()
-        return redirect(url_for("admin_reclamacoes"))
-
-    conn.close()
-    return render_template("admin_responder_reclamacao.html", r=reclamacao)
 
 @app.route("/admin/orcamentos/<int:id>/responder", methods=["GET", "POST"])
 @login_required
 def responder_orcamento(id):
     conn = get_connection()
-    pedido = conn.execute("""
-        SELECT p.*, s.titulo as servico_nome 
-        FROM pedidos_orcamento p 
-        LEFT JOIN servicos s ON p.servico_id = s.id 
-        WHERE p.id = ?
-    """, (id,)).fetchone()
+    pedido = conn.execute("SELECT p.*, s.titulo as servico_nome FROM pedidos_orcamento p LEFT JOIN servicos s ON p.servico_id = s.id WHERE p.id = ?", (id,)).fetchone()
     
     if not pedido:
         conn.close()
@@ -747,22 +708,49 @@ def responder_orcamento(id):
         nome_cliente = pedido['nome']
         servico = pedido['servico_nome'] if pedido['servico_nome'] else "Serviço Geral"
 
-        # --- EMAIL UNIFORMIZADO (AMARELO VISRECI) ---
-        corpo_email = f"""
-        <div style="font-family: Arial, sans-serif; padding: 25px; border: 2px solid #ffc107; border-radius: 10px;">
-            <h2 style="color: #ffc107; margin-bottom: 20px;">💼 Proposta de Orçamento - Visreci</h2>
-            <p>Estimado(a) <b>{nome_cliente}</b>,</p>
-            <p>Agradecemos o seu contacto para o serviço de <b>{servico}</b>.</p>
-            <p>Abaixo apresentamos a nossa proposta detalhada:</p>
-            
-            <div style="background: #fffdf5; padding: 20px; border-left: 5px solid #ffc107; border-radius: 5px; margin: 20px 0; color: #333;">
-                <p style="white-space: pre-wrap; margin: 0;">{mensagem_proposta}</p>
-                {f'<div style="margin-top: 15px; font-size: 1.1rem;"><b>Investimento Estimado:</b> <span style="color: #856404; font-weight: bold;">{valor_estimado}€</span></div>' if valor_estimado else ''}
-            </div>
+        # --- CONVERSÃO DO LOGO PARA BASE64 ---
+        img_base64 = ""
+        caminho_real_logo = os.path.join(app.root_path, "static", "IMG", "LogoLetra.png")
+        try:
+            with open(caminho_real_logo, "rb") as image_file:
+                img_base64 = base64.b64encode(image_file.read()).decode('utf-8')
+        except Exception as e:
+            print(f"Erro ao ler imagem na proposta para Base64: {e}")
 
-            <p>Ficamos a aguardar o seu feedback para procedermos com o agendamento.</p>
-            <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
-            <p style="font-size: 0.85rem; color: #777;"><b>Visreci - Viseu</b><br>Sustentabilidade em primeiro lugar.</p>
+        if img_base64:
+            tag_logo = f'<img src="data:image/png;base64,{img_base64}" alt="VISRECI" style="max-height: 45px; width: auto; display: inline-block; margin-bottom: 8px;">'
+        else:
+            tag_logo = '<h1 style="color: #ffffff; margin: 0; font-size: 1.6rem; font-weight: 700; letter-spacing: 1px;">VISRECI</h1>'
+
+        # --- NOVO TEMPLATE DE E-MAIL DE PROPOSTA PREMIUM (Substitui o da imagem image_c53367.png) ---
+        corpo_email = f"""
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+            <div style="background-color: #1a1a1a; padding: 25px 30px; text-align: center; border-bottom: 4px solid #ffc107;">
+                {tag_logo}
+                <p style="color: #ffc107; margin: 0; font-size: 0.85rem; text-transform: uppercase; font-weight: 600; letter-spacing: 2px;">Proposta Comercial</p>
+            </div>
+            
+            <div style="padding: 35px 25px; background-color: #ffffff; color: #333333; line-height: 1.6;">
+                <h2 style="color: #1a1a1a; font-size: 1.3rem; margin-top: 0; margin-bottom: 15px;">Estimado(a) {nome_cliente},</h2>
+                <p style="font-size: 1rem;">Agradecemos o seu contacto e preferência pela <b>VISRECI</b>. Na sequência do seu pedido para o equipamento/serviço <b>{servico}</b>, elaborámos a seguinte proposta técnica e comercial:</p>
+                
+                <div style="background-color: #f9f9f9; border-left: 4px solid #ffc107; padding: 20px; border-radius: 4px; margin: 25px 0; color: #222222; white-space: pre-wrap; font-size: 0.95rem;">{mensagem_proposta}</div>
+                
+                {f'''
+                <div style="background-color: #fffdf0; border: 1px dashed #ffc107; padding: 15px 20px; border-radius: 8px; text-align: center; margin-bottom: 25px;">
+                    <span style="color: #666666; font-size: 0.85rem; text-transform: uppercase; display: block; margin-bottom: 4px; font-weight: 600; letter-spacing: 0.5px;">Investimento Estimado Global:</span>
+                    <span style="color: #1a1a1a; font-size: 1.6rem; font-weight: 800;">{valor_estimado}€</span>
+                </div>
+                ''' if valor_estimado else ''}
+                
+                <p style="font-size: 0.95rem; margin-top: 25px; margin-bottom: 0;">Ficamos inteiramente à sua disposição para qualquer esclarecimento técnico ou ajuste necessário.</p>
+                <p style="font-size: 0.95rem; margin-top: 10px;">Com os nossos melhores cumprimentos,</p>
+            </div>
+            
+            <div style="background-color: #f4f4f4; padding: 20px; text-align: center; border-top: 1px solid #eeeeee; font-size: 0.8rem; color: #777777;">
+                <p style="margin: 0 0 5px 0; font-weight: 600; color: #444444;">VISRECI, Lda.</p>
+                <p style="margin: 0;">Equipa Comercial e de Engenharia</p>
+            </div>
         </div>
         """
         
@@ -772,14 +760,81 @@ def responder_orcamento(id):
             log_action("UPDATE", "ORÇAMENTO", id, f"Proposta enviada para {email_cliente}")
             flash("Proposta enviada com sucesso!", "success")
         else:
-            flash("Erro ao enviar email.", "danger")
-            
+            flash("Erro ao enviar o e-mail da proposta.", "danger")
         conn.close()
         return redirect(url_for("admin_pedidos"))
 
     conn.close()
     return render_template("admin_responder_orcamento.html", p=pedido)
 
+@app.route("/admin/contactos/<int:id>/responder", methods=["GET", "POST"])
+@login_required
+def responder_contacto(id):
+    conn = get_connection()
+    # Assume-se que a tua tabela se chama 'contactos'
+    contacto = conn.execute("SELECT * FROM contactos WHERE id = ?", (id,)).fetchone()
+    
+    if not contacto:
+        conn.close()
+        flash("Mensagem de contacto não encontrada.", "danger")
+        return redirect(url_for("admin_contactos"))
+
+    if request.method == "POST":
+        mensagem_resposta = request.form.get("resposta")
+        email_cliente = contacto['email']
+        nome_cliente = contacto['nome']
+        assunto_original = contacto['assunto']
+
+        # --- CONVERSÃO DO LOGO PARA BASE64 ---
+        img_base64 = ""
+        caminho_real_logo = os.path.join(app.root_path, "static", "IMG", "LogoLetra.png")
+        try:
+            with open(caminho_real_logo, "rb") as image_file:
+                img_base64 = base64.b64encode(image_file.read()).decode('utf-8')
+        except Exception as e:
+            print(f"Erro ao ler imagem na resposta de contacto: {e}")
+
+        if img_base64:
+            tag_logo = f'<img src="data:image/png;base64,{img_base64}" alt="VISRECI" style="max-height: 45px; width: auto; display: inline-block; margin-bottom: 8px;">'
+        else:
+            tag_logo = '<h1 style="color: #ffffff; margin: 0; font-size: 1.6rem; font-weight: 700; letter-spacing: 1px;">VISRECI</h1>'
+
+        # --- TEMPLATE DE E-MAIL DE RESPOSTA PREMIUM ---
+        corpo_email = f"""
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+            <div style="background-color: #1a1a1a; padding: 25px 30px; text-align: center; border-bottom: 4px solid #ffc107;">
+                {tag_logo}
+                <p style="color: #ffc107; margin: 0; font-size: 0.85rem; text-transform: uppercase; font-weight: 600; letter-spacing: 2px;">Resposta ao seu Contacto</p>
+            </div>
+            
+            <div style="padding: 35px 25px; background-color: #ffffff; color: #333333; line-height: 1.6;">
+                <h2 style="color: #1a1a1a; font-size: 1.3rem; margin-top: 0; margin-bottom: 15px;">Olá {nome_cliente},</h2>
+                <p style="font-size: 1rem;">No seguimento da mensagem que nos enviou com o assunto "<b>{assunto_original}</b>", a nossa equipa apresenta a seguinte resposta:</p>
+                
+                <div style="background-color: #f9f9f9; border-left: 4px solid #ffc107; padding: 20px; border-radius: 4px; margin: 25px 0; color: #222222; white-space: pre-wrap; font-size: 0.95rem;">{mensagem_resposta}</div>
+                
+                <p style="font-size: 0.95rem; margin-bottom: 0;">Caso necessite de mais alguma informação ou esclarecimento adicional, não hesite em responder a este e-mail.</p>
+                <p style="font-size: 0.95rem; margin-top: 15px;">Melhores cumprimentos,</p>
+            </div>
+            
+            <div style="background-color: #f4f4f4; padding: 20px; text-align: center; border-top: 1px solid #eeeeee; font-size: 0.8rem; color: #777777;">
+                <p style="margin: 0 0 5px 0; font-weight: 600; color: #444444;">VISRECI, Lda.</p>
+                <p style="margin: 0;">Suporte e Apoio ao Cliente</p>
+            </div>
+        </div>
+        """
+        
+        if enviar_email(email_cliente, f"RE: {assunto_original} - Visreci", corpo_email):
+            # Opcional: Se tiveres uma coluna 'tratado' na tabela contactos, podes fazer UPDATE aqui
+            flash("Resposta enviada com sucesso!", "success")
+        else:
+            flash("Erro ao enviar o e-mail de resposta.", "danger")
+            
+        conn.close()
+        return redirect(url_for("admin_contactos"))
+
+    conn.close()
+    return render_template("admin_responder_contacto.html", c=contacto)
 
 if __name__ == "__main__":
     init_db()

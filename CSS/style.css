@@ -8,73 +8,43 @@
    - Tabelas (logs/admin): glass table
    ========================================================= */
 
-
-/* =========================
-   1) VARIÁVEIS (THEME)
-   ========================= */
 :root {
     --vis-accent: #ffc107;
     --vis-accent-hover: #e0a800;
-
     --vis-text: #f9fafb;
     --vis-muted: rgba(255, 255, 255, .72);
-
     --vis-glass: rgba(255, 255, 255, .12);
     --vis-glass-2: rgba(255, 255, 255, .08);
     --vis-glass-border: rgba(255, 255, 255, .18);
-
     --vis-shadow: 0 20px 60px rgba(0, 0, 0, .35);
     --vis-shadow-soft: 0 10px 30px rgba(0, 0, 0, .20);
 }
 
-
-/* =========================
-   2) BASE / FUNDO
-   ========================= */
-/* =========================
-   2) BASE / FUNDO (Versão Final PC + iPhone)
-   ========================= */
 body {
     margin: 0;
     padding: 0;
     font-family: 'Inter', sans-serif;
     min-height: 100vh;
     background: none;
-    /* Removemos do body para não bugar no iOS */
 }
 
 body::before {
     content: "";
     position: fixed;
     inset: 0;
-    /* Ocupa o ecrã todo */
     z-index: -1;
-
-    /* CAMADA 1: O Overlay e o Blur | CAMADA 2: A Imagem */
-    /* Nota: Usamos o caminho '../' se o teu CSS estiver numa pasta própria */
     background: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
         url('../IMG/fundo.jpg') no-repeat center center;
-
     background-size: cover;
     backdrop-filter: blur(1.5px);
     -webkit-backdrop-filter: blur(1.5px);
-    /* Suporte para Safari/iPhone */
-
-    /* Importante para iOS: No elemento fixo usamos scroll */
     background-attachment: scroll;
 }
 
-/* Evita navbar tapar âncoras */
 section {
     scroll-margin-top: 100px;
 }
 
-
-/* =========================
-   3) TOPBAR / NAVBAR (COMO ANTES)
-   ========================= */
-
-/* Ícones da topbar */
 .topbar .bi {
     font-size: 14px;
     transition: color 0.2s ease-in-out;
@@ -84,21 +54,17 @@ section {
     color: #0d6efd;
 }
 
-/* Aproximar aos cantos */
 .topbar .container-fluid {
     padding-left: 10px;
     padding-right: 10px;
 }
 
-/* Navbar (mantém estilo do Bootstrap) */
 .navbar {
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
     z-index: 1030;
-    /* Bootstrap default */
 }
 
-/* Logo */
 .logo-navbar {
     height: 70px;
     width: auto;
@@ -110,7 +76,6 @@ section {
     align-items: center;
 }
 
-/* No mobile, logótipo centralizado */
 @media (max-width: 991px) {
     .navbar-brand {
         margin-left: auto !important;
@@ -118,26 +83,16 @@ section {
     }
 }
 
-/* Dropdown de idiomas por cima */
 .dropdown-menu {
     z-index: 2000 !important;
 }
 
-
-/* =========================
-   4) FOOTER
-   (mantive o teu estilo atual)
-   ========================= */
 footer {
     background-color: rgba(248, 249, 250, 0.95);
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
 }
 
-
-/* =========================
-   5) HERO / SETA
-   ========================= */
 .hero-highlight {
     display: inline-block;
     padding: 12px 24px;
@@ -194,10 +149,6 @@ footer {
     }
 }
 
-
-/* =========================
-   6) SOBRE (texto branco)
-   ========================= */
 .sobre-section h2,
 .sobre-section p {
     color: #fff !important;
@@ -207,10 +158,6 @@ footer {
     opacity: 0.9;
 }
 
-
-/* =========================
-   7) UTILITÁRIOS GLASS/DARK (para secções e cards)
-   ========================= */
 .glass-panel {
     background: linear-gradient(180deg, var(--vis-glass), var(--vis-glass-2));
     border: 1px solid var(--vis-glass-border);
@@ -236,7 +183,6 @@ footer {
     box-shadow: 0 18px 50px rgba(0, 0, 0, .30);
 }
 
-/* Texto em cima de fundo escuro */
 .on-dark,
 .on-dark * {
     color: var(--vis-text);
@@ -246,7 +192,6 @@ footer {
     color: var(--vis-muted) !important;
 }
 
-/* Botão Visreci */
 .btn-visreci {
     background: var(--vis-accent);
     border-color: var(--vis-accent);
@@ -261,7 +206,6 @@ footer {
     color: #212529;
 }
 
-/* Inputs glass (opcional) */
 .input-glass {
     background: rgba(255, 255, 255, .10) !important;
     border: 1px solid rgba(255, 255, 255, .22) !important;
@@ -272,10 +216,6 @@ footer {
     color: rgba(255, 255, 255, .60) !important;
 }
 
-
-/* =========================
-   8) CONTACTOS (limpo, sem duplicados)
-   ========================= */
 #contact {
     padding: 80px 0;
     background: transparent;
@@ -288,7 +228,6 @@ footer {
     flex-direction: row;
     gap: 2rem;
     align-items: stretch;
-    /* mesma altura */
 }
 
 .contact-box {
@@ -298,7 +237,6 @@ footer {
     justify-content: stretch;
 }
 
-/* Formulário */
 .contact-form-box {
     background: rgba(0, 0, 0, 0.55);
     border-radius: 0.75rem;
@@ -354,7 +292,6 @@ footer {
     transform: translateY(-2px);
 }
 
-/* Mapa */
 .map-box {
     border-radius: 0.75rem;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
@@ -371,13 +308,11 @@ footer {
     filter: brightness(0.9) saturate(0.85);
 }
 
-/* Alturas iguais em colunas Bootstrap */
 .row.align-items-stretch>[class*='col-'] {
     display: flex;
     align-items: stretch;
 }
 
-/* Responsivo */
 @media (max-width: 992px) {
     .row.align-items-stretch {
         flex-direction: column;
@@ -388,7 +323,6 @@ footer {
     }
 }
 
-/* Mensagem de sucesso */
 .success-message {
     position: fixed;
     top: 0;
@@ -438,10 +372,6 @@ footer {
     }
 }
 
-
-/* =========================
-   9) LOGIN (Área Reservada) - scoped
-   ========================= */
 .page-login .login-card {
     max-width: 420px;
     width: 100%;
@@ -508,17 +438,6 @@ footer {
     color: #212529;
 }
 
-.page-login .btn-warning-visreci:focus,
-.page-login .btn-warning-visreci:active {
-    background-color: #d39e00;
-    border-color: #d39e00;
-    box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.4);
-}
-
-
-/* =========================
-   10) TABELAS GLASS (Admin/Logs)
-   ========================= */
 .table-glass {
     background: rgba(0, 0, 0, .35);
     border: 1px solid rgba(255, 255, 255, .16);
@@ -554,9 +473,6 @@ footer {
     color: rgba(255, 255, 255, .72) !important;
 }
 
-/* --- ADMIN PEDIDOS CONSOLIDADO --- */
-
-/* 1. Contentor Principal (Caixa Glass) */
 .table-glass.on-dark {
     background: rgba(15, 15, 15, 0.85) !important;
     backdrop-filter: blur(12px);
@@ -566,7 +482,6 @@ footer {
     padding: 25px !important;
 }
 
-/* 2. Labels dos Filtros */
 .filter-label {
     color: #ffc107;
     font-size: 0.75rem;
@@ -578,7 +493,6 @@ footer {
     text-align: left;
 }
 
-/* 3. Inputs e Selects */
 .custom-input,
 #filtroEstado {
     background-color: rgba(255, 255, 255, 0.08) !important;
@@ -586,12 +500,10 @@ footer {
     color: white !important;
     height: 46px !important;
     border-radius: 0 8px 8px 0 !important;
-    /* Arredonda apenas direita quando tem ícone */
 }
 
 select#filtroEstado {
     border-radius: 8px !important;
-    /* Arredonda tudo no select */
 }
 
 .input-group-text {
@@ -606,7 +518,6 @@ select#filtroEstado {
     color: rgba(255, 255, 255, 0.5) !important;
 }
 
-/* 4. Estilo da Tabela */
 .table thead th {
     color: #c5a021 !important;
     font-weight: 600;
@@ -619,7 +530,6 @@ select#filtroEstado {
     color: rgba(255, 255, 255, 0.6) !important;
 }
 
-/* 5. Botões */
 .btn-outline-success {
     color: #2ecc71 !important;
     border-color: #2ecc71 !important;
@@ -632,7 +542,6 @@ select#filtroEstado {
     color: #000 !important;
 }
 
-/* 6. Modal */
 .glass-modal {
     background: #121212 !important;
     border: 1px solid #c5a021 !important;
@@ -649,7 +558,6 @@ select#filtroEstado {
     color: white !important;
 }
 
-/* Dashboard Slim Cards */
 .dashboard-card {
     background: rgba(255, 255, 255, 0.05) !important;
     backdrop-filter: blur(10px);
@@ -682,7 +590,6 @@ select#filtroEstado {
     letter-spacing: 1px;
 }
 
-/* Bordas coloridas discretas à esquerda */
 .card-servicos {
     border-left: 4px solid #ffc107;
 }
@@ -698,8 +605,6 @@ select#filtroEstado {
 .card-admin {
     border-left: 4px solid #198754;
 }
-
-/* --- NOVO DESIGN DASHBOARD --- */
 
 .glass-container {
     background: rgba(0, 0, 0, 0.45) !important;
@@ -752,7 +657,6 @@ select#filtroEstado {
     font-weight: 600;
 }
 
-/* Cores dos Ícones */
 .card-gold .stat-icon {
     color: #ffc107;
     box-shadow: 0 0 15px rgba(255, 193, 7, 0.2);
@@ -773,7 +677,6 @@ select#filtroEstado {
     box-shadow: 0 0 15px rgba(46, 204, 113, 0.2);
 }
 
-/* Botões de Ação */
 .quick-link-btn {
     display: flex;
     flex-direction: column;
@@ -826,12 +729,10 @@ select#filtroEstado {
     font-size: 0.85rem;
 }
 
-/* Container da Imagem Circular */
 .team-img-container {
     width: 130px;
     height: 130px;
     margin: -65px auto 15px;
-    /* Faz a foto sair um pouco para fora do card */
     border-radius: 50%;
     padding: 5px;
     background: linear-gradient(45deg, #ffc107, transparent);
@@ -846,7 +747,6 @@ select#filtroEstado {
     border: 3px solid #1a1a1a;
 }
 
-/* O Card em si */
 .team-card {
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(15px);
@@ -854,7 +754,6 @@ select#filtroEstado {
     border-radius: 20px;
     padding: 20px;
     margin-top: 65px;
-    /* Espaço para a foto que sai fora */
     text-align: center;
     transition: all 0.4s ease;
 }
@@ -876,7 +775,6 @@ select#filtroEstado {
     font-weight: 600;
 }
 
-/* Animação de entrada */
 .fade-in {
     animation: fadeInUp 0.8s ease-out;
 }
@@ -893,17 +791,14 @@ select#filtroEstado {
     }
 }
 
-/* Ajuste das imagens na página Sobre */
 .glass-panel img {
     transition: transform 0.5s ease;
 }
 
 .glass-panel:hover img {
     transform: scale(1.02);
-    /* Zoom suave ao passar o rato */
 }
 
-/* Destaque para os ícones nos cards de valores */
 .glass-card i {
     transition: all 0.3s ease;
 }
@@ -913,18 +808,15 @@ select#filtroEstado {
     filter: drop-shadow(0 0 10px rgba(255, 193, 7, 0.5));
 }
 
-/* Forçar o texto dos dropdowns a ser visível */
 .input-glass option {
     background-color: #222 !important;
     color: #fff !important;
 }
 
-/* Se o texto do input estiver muito claro */
 .input-glass {
     color: white !important;
 }
 
-/* GRELHA COMPACTA DE SERVIÇOS */
 .service-compact-card {
     background: #ffffff;
     border-radius: 12px;
@@ -941,7 +833,6 @@ select#filtroEstado {
 
 .service-img-mini {
     height: 160px;
-    /* Tamanho reduzido como pediste */
     background: #fdfdfd;
     display: flex;
     align-items: center;
@@ -969,7 +860,6 @@ select#filtroEstado {
     letter-spacing: 0.8px;
 }
 
-/* PAINEL DE DETALHE INDUSTRIAL */
 .industrial-detail-panel {
     background: white;
     border-radius: 20px;
@@ -979,7 +869,6 @@ select#filtroEstado {
 
 .detail-img-bg {
     background: #f4f4f4;
-    /* Fundo neutro para o produto */
 }
 
 .main-product-img {
@@ -1013,4 +902,37 @@ select#filtroEstado {
 .quote-form-container .form-control:focus {
     border-color: #f1c40f;
     box-shadow: 0 0 0 0.2rem rgba(241, 196, 15, 0.15);
+}
+
+/* =========================================================
+   13) SISTEMA DE PAGINAÇÃO COMPACTO BOOTSTRAP (UNIFICADO)
+   ========================================================= */
+.custom-pagination .page-link {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #ffffff !important;
+    padding: 8px 16px !important;
+    font-size: 0.85rem !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease;
+    box-shadow: none !important;
+}
+
+.custom-pagination .page-link:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
+}
+
+.custom-pagination .page-item.active .page-link {
+    background: #ffc107 !important;
+    color: #000000 !important;
+    border-color: #ffc107 !important;
+    font-weight: 600 !important;
+}
+
+.custom-pagination .page-item.disabled .page-link {
+    background: rgba(255, 255, 255, 0.02) !important;
+    color: rgba(255, 255, 255, 0.3) !important;
+    border-color: rgba(255, 255, 255, 0.05) !important;
+    opacity: 0.6;
 }

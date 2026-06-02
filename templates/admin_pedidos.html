@@ -1,15 +1,12 @@
 {% extends "menu.html" %}
 {% block content %}
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <section class="py-4 mt-4">
     <div class="container mt-5">
         <div class="row align-items-center mb-4">
             <div class="col-sm-6">
-                <h2 class="text-white fw-bold m-0">
-                    Gestão de Pedidos
-                </h2>
+                <h2 class="text-white fw-bold m-0">Gestão de Pedidos</h2>
             </div>
             <div class="col-sm-6 text-sm-end mt-3 mt-sm-0">
                 <a href="{{ url_for('exportar_pedidos') }}" class="btn btn-outline-success border-2 fw-bold px-4">
@@ -87,13 +84,11 @@
                                         data-bs-toggle="modal" data-bs-target="#modal{{ p['id'] }}">
                                         <i class="fas fa-eye"></i>
                                     </button>
-
                                     {% if p["tratado"] == 0 %}
                                     <a href="{{ url_for('responder_orcamento', id=p['id']) }}"
                                         class="btn btn-sm btn-info text-dark fw-bold px-3" title="Enviar Proposta">
                                         <i class="fas fa-reply"></i>
                                     </a>
-
                                     <a href="{{ url_for('admin_pedido_tratar', pedido_id=p['id']) }}"
                                         class="btn btn-sm btn-success rounded-end px-3" title="Concluir">
                                         <i class="fas fa-check"></i>
@@ -102,11 +97,38 @@
                                 </div>
                             </td>
                         </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted italic">
+                                <i class="bi bi-box-seam d-block mb-2 fs-2"></i> Ainda não existem pedidos na base de
+                                dados.
+                            </td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
+
+        {% if total_pages > 1 %}
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center custom-pagination">
+                <li class="page-item {{ 'disabled' if page == 1 }}">
+                    <a class="page-link"
+                        href="{{ url_for('admin_pedidos', page=page-1, estado=filtro_atual) }}">Anterior</a>
+                </li>
+                {% for p in range(1, total_pages + 1) %}
+                <li class="page-item {{ 'active' if p == page }}">
+                    <a class="page-link" href="{{ url_for('admin_pedidos', page=p, estado=filtro_atual) }}">{{ p }}</a>
+                </li>
+                {% endfor %}
+                <li class="page-item {{ 'disabled' if page == total_pages }}">
+                    <a class="page-link"
+                        href="{{ url_for('admin_pedidos', page=page+1, estado=filtro_atual) }}">Próximo</a>
+                </li>
+            </ul>
+        </nav>
+        {% endif %}
     </div>
 
     {% for p in pedidos %}
@@ -153,7 +175,6 @@
                 <div class="modal-footer border-0 pt-0">
                     <button type="button" class="btn btn-outline-secondary btn-sm"
                         data-bs-dismiss="modal">Fechar</button>
-
                     {% if p["tratado"] == 0 %}
                     <a href="{{ url_for('responder_orcamento', id=p['id']) }}"
                         class="btn btn-info btn-sm px-4 fw-bold text-dark">
@@ -173,13 +194,6 @@
 </section>
 
 <style>
-    .table-glass {
-        background: rgba(255, 255, 255, 0.03);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 15px;
-    }
-
     .hover-row:hover {
         background: rgba(255, 255, 255, 0.05);
         transition: 0.3s;
@@ -199,11 +213,8 @@
     document.getElementById('pedidoSearch').addEventListener('keyup', function () {
         let val = this.value.toLowerCase();
         let rows = document.querySelectorAll('#tableBody tr');
-        rows.forEach(row => {
-            row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none';
-        });
+        rows.forEach(row => { row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none'; });
     });
-
     function filtrar() {
         let val = document.getElementById('filtroEstado').value;
         window.location.href = val === "todos" ? "{{ url_for('admin_pedidos') }}" : "{{ url_for('admin_pedidos') }}?estado=" + val;

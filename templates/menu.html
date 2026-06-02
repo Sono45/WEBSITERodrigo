@@ -41,7 +41,8 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm sticky-top">
         <div class="container-fluid">
             <a class="navbar-brand mx-auto mx-lg-0 d-flex align-items-center" href="{{ url_for('index') }}">
-                <img src="/IMG/Logo Principal 2 ( Sem Letras ).png" alt="Visreci Logo" class="logo-navbar" style="max-height: 50px;">
+                <img src="/IMG/Logo Principal 2 ( Sem Letras ).png" alt="Visreci Logo" class="logo-navbar"
+                    style="max-height: 50px;">
             </a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuNav">
@@ -49,64 +50,69 @@
             </button>
 
             <div class="collapse navbar-collapse" id="menuNav">
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 fw-semibold">
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Início</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('sobre') }}">Sobre</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('servicos') }}">Serviços</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('contactos') }}">Contactos</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('equipa') }}">Equipa</a></li>
+                <div class="collapse navbar-collapse" id="menuNav">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 fw-semibold">
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Início</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('sobre') }}">Sobre</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('servicos') }}">Serviços</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('contactos') }}">Contactos</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('equipa') }}">Equipa</a></li>
 
-                    {% if session.get("user_id") %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-person-circle me-1"></i> Olá, {{ session.get("user_name") }}
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0">
-                            <li><a class="dropdown-item fw-bold text-primary" href="{{ url_for('dashboard') }}">
-                                    <i class="bi bi-speedometer2 me-2"></i>Painel de Gestão
-                                </a></li>
+                        {% if session.get("user_id") %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle me-1"></i> Olá, {{ session.get("user_name") }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0">
+                                <li><a class="dropdown-item fw-bold text-primary" href="{{ url_for('dashboard') }}">
+                                        <i class="bi bi-speedometer2 me-2"></i>Painel de Gestão
+                                    </a></li>
 
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
 
-                            {% if session.get("user_role") == "admin" %}
-                            <li><a class="dropdown-item" href="{{ url_for('admin_servicos') }}">
-                                    <i class="bi bi-gear-fill me-2"></i>Gerir Serviços
-                                </a></li>
+                                {% if session.get("user_role") == "admin" %}
+                                <li><a class="dropdown-item" href="{{ url_for('admin_servicos') }}">
+                                        <i class="bi bi-gear-fill me-2"></i>Gerir Serviços
+                                    </a></li>
 
-                            <li><a class="dropdown-item" href="{{ url_for('admin_equipa') }}">
-                                    <i class="bi bi-people-fill me-2"></i>Gerir Equipa
-                                </a></li>
-                            {% endif %}
+                                <li><a class="dropdown-item" href="{{ url_for('admin_equipa') }}">
+                                        <i class="bi bi-people-fill me-2"></i>Gerir Equipa
+                                    </a></li>
 
-                            <li><a class="dropdown-item" href="{{ url_for('admin_logs') }}">
-                                    <i class="bi bi-list-check me-2"></i>Auditoria (Logs)
-                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('admin_contactos') }}">
+                                        <i class="bi bi-envelope-open-fill me-2"></i>Mensagens de Contacto
+                                    </a></li>
+                                {% endif %}
 
-                            <li><a class="dropdown-item" href="{{ url_for('admin_pedidos') }}">
-                                    <i class="bi bi-envelope-paper-fill me-2"></i>Pedidos de Orçamento
-                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('admin_logs') }}">
+                                        <i class="bi bi-list-check me-2"></i>Auditoria (Logs)
+                                    </a></li>
 
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
+                                <li><a class="dropdown-item" href="{{ url_for('admin_pedidos') }}">
+                                        <i class="bi bi-envelope-paper-fill me-2"></i>Pedidos de Orçamento
+                                    </a></li>
 
-                            <li><a class="dropdown-item text-danger fw-bold" href="{{ url_for('logout') }}">
-                                    <i class="bi bi-box-arrow-right me-2"></i>Terminar sessão
-                                </a></li>
-                        </ul>
-                    </li>
-                    {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('login') }}">
-                            <i class="bi bi-lock-fill me-1"></i> Área Reservada
-                        </a>
-                    </li>
-                    {% endif %}
-                </ul>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+
+                                <li><a class="dropdown-item text-danger fw-bold" href="{{ url_for('logout') }}">
+                                        <i class="bi bi-box-arrow-right me-2"></i>Terminar sessão
+                                    </a></li>
+                            </ul>
+                        </li>
+                        {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('login') }}">
+                                <i class="bi bi-lock-fill me-1"></i> Área Reservada
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
             </div>
-        </div>
     </nav>
 
     <main>
@@ -122,8 +128,9 @@
                     <p class="mb-1">Rua das Leiras 36, 3510-933 Viseu</p>
                     <p class="mb-1"><i class="bi bi-telephone-fill me-2"></i> 232 957 388</p>
                     <p class="mb-1"><i class="bi bi-envelope-fill me-2"></i> geral@visreci.pt</p>
-                    <p class="mb-3"><i class="bi bi-envelope-fill me-2"></i> rr.info@sapo.pt</p>
-                    <a href="https://www.livroreclamacoes.pt/Pedido/Reclamacao" target="_blank" rel="noopener noreferrer"
+                    <p class="mb-1"><i class="bi bi-envelope-fill me-2"></i> rr.info@sapo.pt</p>
+                    <a href="https://www.livroreclamacoes.pt/Pedido/Reclamacao" target="_blank"
+                        rel="noopener noreferrer"
                         class="text-warning text-decoration-none small fw-bold d-flex align-items-center">
                         <img src="{{ url_for('static', filename='IMG/logo_LRE_preto positivo.png') }}"
                             alt="Livro de Reclamações" style="height: 45px; width: auto;" class="me-2">
